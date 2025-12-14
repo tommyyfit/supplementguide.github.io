@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Supplement Guide</title>
+    <meta name="description" content="Interaktivní průvodce doplňky stravy pro sílu, zdraví a energii. Vytvořte si vlastní stack a získejte tipy na kombinace.">
+    <meta name="author" content="tommyyfit">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M13 10V3L4 14h7v7l9-11h-7z'/></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .card-hover { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:active { transform: scale(0.98); }
+        @media (min-width: 768px) {
+            .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1); }
+        }
+
+        #toast-container {
+            position: fixed; top: 1rem; right: 1rem; z-index: 100;
+            display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none;
+        }
+        .toast { pointer-events: auto; min-width: 300px; max-width: 90vw; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Kategorie Badges */
+        .cat-badge-Síla { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .cat-badge-Zdraví { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
+        .cat-badge-Energie { background: #fefce8; color: #a16207; border: 1px solid #fef9c3; }
+        .cat-badge-Spánek { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
+        .cat-badge-Nootropika { background: #faf5ff; color: #7e22ce; border: 1px solid #f3e8ff; }
+
+        .icon-bg-Síla { background: #fff7ed; }
+        .icon-bg-Zdraví { background: #f0fdf4; }
+        .icon-bg-Energie { background: #fefce8; }
+        .icon-bg-Spánek { background: #eff6ff; }
+        .icon-bg-Nootropika { background: #faf5ff; }
+
+        /* Confidence Indicators */
+        .conf-high { border-left: 4px solid #22c55e; }
+        .conf-medium { border-left: 4px solid #eab308; }
+        
+        /* Interactive Badge Styles */
+        .badge-conf-link { 
+            transition: all 0.2s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            text-decoration: none !important;
+        }
+        .badge-conf-link:hover { transform: scale(1.05); filter: brightness(0.95); }
+
+        .badge-conf-high { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-conf-medium { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col">
+
+    <div id="toast-container"></div>
+
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-brand-600 text-white p-1.5 rounded-lg shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 hidden sm:block">Supplement<span class="text-brand-600">Guide</span></h1>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <select id="user-gender" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 block p-2 pr-8 font-medium cursor-pointer hover:bg-slate-50 transition shadow-sm">
+                        <option value="male">Muž 👨</option>
+                        <option value="female">Žena 👩</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-brand-500 transition shadow-sm relative group">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide hidden sm:block">Váha</span>
+                    <input type="number" id="user-weight" value="80" class="w-10 bg-transparent text-sm font-bold text-slate-900 text-center focus:outline-none border-none placeholder-slate-300" placeholder="kg">
+                    <span class="text-sm text-slate-400 font-medium">kg</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <aside class="lg:col-span-4 space-y-6 order-1 lg:order-1">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-24 transition-all">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-4">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Můj Stack
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <span id="stack-count" class="bg-brand-100 text-brand-700 text-xs font-bold px-2.5 py-0.5 rounded-full">0</span>
+                        <button onclick="clearStack()" class="text-xs text-slate-400 hover:text-red-500 font-medium transition underline decoration-dotted" title="Vymazat vše">Reset</button>
+                    </div>
+                </div>
+
+                <div id="stack-empty" class="text-center py-12">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-500">Stack je prázdný</p>
+                    <p class="text-xs text-slate-400 mt-1">Vyber doplňky z katalogu</p>
+                </div>
+
+                <div id="stack-analysis" class="hidden space-y-5">
+                    <div class="bg-slate-50 border border-slate-100 p-3 rounded-lg space-y-2">
+                        <div class="text-xs text-slate-500 flex justify-between items-center">
+                            <span>Profil:</span>
+                            <strong id="profile-display" class="text-slate-800">Muž, 80kg</strong>
+                        </div>
+                    </div>
+
+                    <div id="warnings-container" class="hidden p-4 bg-red-50 border border-red-100 rounded-lg">
+                        <h3 class="text-xs font-bold text-red-700 uppercase tracking-wide mb-2 flex items-center gap-2">⚠️ Pozor na kombinace</h3>
+                        <ul id="warnings-list" class="text-sm text-red-800 space-y-2 list-disc pl-4"></ul>
+                    </div>
+
+                    <div id="suggestions-container" class="hidden p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
+                        <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-2 flex items-center gap-2">💡 Tip experta</h3>
+                        <ul id="suggestions-list" class="text-sm text-indigo-800 space-y-2"></ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4 border-b border-slate-100 pb-2">Rozvrh Dne</h3>
+                        <div class="relative pl-4 space-y-6">
+                            <div class="relative pl-6 border-l-2 border-slate-100 pb-2">
+                                <span class="absolute -left-[9px] top-0 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white shadow-sm"></span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-2">Ráno / Dopoledne</h4>
+                                <div id="schedule-morning" class="space-y-2 text-xs text-slate-500 italic min-h-[1rem]">--</div>
+                            </div>
+                            <div class="relative pl-6 border-l-2 border-slate-100 pb-2">
+                                <span class="absolute -left-[9px] top-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-sm"></span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-2">Před Tréninkem</h4>
+                                <div id="schedule-pre" class="space-y-2 text-xs text-slate-500 italic min-h-[1rem]">--</div>
+                            </div>
+                            <div class="relative pl-6 border-l-2 border-slate-100 pb-2">
+                                <span class="absolute -left-[9px] top-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-2">Po Tréninku</h4>
+                                <div id="schedule-post" class="space-y-2 text-xs text-slate-500 italic min-h-[1rem]">--</div>
+                            </div>
+                            <div class="relative pl-6 border-l-2 border-slate-100">
+                                <span class="absolute -left-[9px] top-0 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white shadow-sm"></span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-2">Večer / Spánek</h4>
+                                <div id="schedule-evening" class="space-y-2 text-xs text-slate-500 italic min-h-[1rem]">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100">
+                        <button onclick="saveStackProfile()" class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition" title="Uložit do prohlížeče">
+                            <span>💾</span> Uložit
+                        </button>
+                        <button onclick="exportStackText()" class="flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold py-2.5 rounded-lg transition" title="Stáhnout jako soubor">
+                            <span>📄</span> Export
+                        </button>
+                        <button onclick="copyStackToClipboard()" class="flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold py-2.5 rounded-lg transition" title="Zkopírovat do schránky">
+                            <span>📋</span> Kopírovat
+                        </button>
+                    </div>
+                </div>
+
+                <div id="saved-profiles-area" class="mt-6 pt-4 border-t border-slate-200 hidden">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Uložené Stacky</h3>
+                    <div id="saved-profiles-list" class="space-y-2"></div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="lg:col-span-8 order-2 lg:order-2">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between sticky top-[5rem] z-50">
+                <div class="relative w-full sm:w-72">
+                    <input type="text" id="search-input" placeholder="Hledat (např. kreatin, spánek)..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm shadow-sm transition-all">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto scrollbar-hide" id="category-filters">
+                    <button class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white shadow transition transform hover:scale-105" data-cat="All">Vše</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition" data-cat="Síla">Síla</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition" data-cat="Zdraví">Zdraví</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition" data-cat="Spánek">Spánek</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition" data-cat="Energie">Energie</button>
+                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition" data-cat="Nootropika">Nootropika</button>
+                </div>
+            </div>
+
+            <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-10"></div>
+        </section>
+    </main>
+
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 flex flex-col">
+
+            <div class="p-6 pb-4 relative border-b border-slate-100 sticky top-0 bg-white z-10">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div class="flex items-center gap-4">
+                    <div id="m-icon" class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner bg-slate-50">💊</div>
+                    <div>
+                        <div class="flex gap-2 mb-1">
+                            <span id="m-category" class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border">Kategorie</span>
+                            <span id="m-confidence"></span>
+                        </div>
+                        <h2 id="m-title" class="text-2xl font-bold text-slate-900 leading-tight">Název</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <p id="m-desc" class="text-slate-600 leading-relaxed"></p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                        <h3 class="text-xs font-bold text-green-800 uppercase mb-2">Hlavní Benefity</h3>
+                        <ul id="m-benefits" class="text-sm text-green-900 space-y-1"></ul>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <h3 class="text-xs font-bold text-blue-800 uppercase mb-2">Dávkování</h3>
+                        <p class="text-sm text-blue-900 mb-1"><span class="font-semibold">Množství:</span> <span id="m-dosage"></span></p>
+                        <p class="text-sm text-blue-900"><span class="font-semibold">Kdy:</span> <span id="m-timing"></span></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-2">Synergie (Vhodné s)</h3>
+                        <div id="m-synergy" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-2">Konflikty (Pozor na)</h3>
+                        <div id="m-conflict" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end sticky bottom-0 z-10">
+                <button id="m-toggle-btn" class="w-full sm:w-auto bg-slate-900 text-white px-8 py-3 rounded-xl font-semibold hover:bg-slate-800 transition shadow-lg active:scale-95">
+                    Přidat do Stacku
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="grid-cols-1 text-center text-brand-700 border-l-2 ">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-xs font-medium">
+            © 2025 Supplement Guide. Všechna práva vyhrazena. | Vytvořil <a href="https://beacons.ai/tommyy.fit">tommyyfit</a>
+        </div>
+    </footer>
+
+    <script>
+// --- 0. URL CLEANUP (Remove .html from visual URL) ---
+        // Používá History API k odstranění '.html' z adresy URL, aniž by došlo k načtení nové stránky.
+        // PODMÍNKA: Spustí se POUZE, pokud NENÍ použito lokální schéma 'file:///', což řeší SecurityError.
+        if (window.location.protocol !== 'file:') {
+            if (window.location.pathname.endsWith('.html')) {
+                const newUrl = window.location.pathname.replace(/\.html$/, '') + window.location.search;
+                window.history.replaceState(null, '', newUrl);
+            }
+        }
+
+        // --- 1. DATA (TOP 50) + Confidence + Links ---
+        const supplements = [
+            // --- KATEGORIE: SÍLA A VÝKON ---
+            { id: 1, name: "Kreatin Monohydrát", category: "Síla", confidence: "high", link: "https://examine.com/supplements/creatine/", icon: "⚡", description: "Zvyšuje zásoby ATP. Nejvíce prozkoumaný doplněk pro sílu.", benefits: ["Zvyšuje sílu", "Svalový objem", "Výbušnost"], dosage: "5g denně", timing: "Kdykoliv (ideálně po tréninku)", synergy: ["Sacharidy", "Voda", "Beta-Alanin"], conflict: [] },
+            { id: 2, name: "Syrovátkový Protein", category: "Síla", confidence: "high", link: "https://examine.com/supplements/whey-protein/", icon: "🥛", description: "Rychle stravitelná bílkovina s vysokou biologickou hodnotou.", benefits: ["Rychlá regenerace", "Růst svalů"], dosage: "20-40g", timing: "Po tréninku / Svačina", synergy: ["Kreatin", "Sacharidy"], conflict: [] },
+            { id: 3, name: "Kasein (Micelární)", category: "Síla", confidence: "high", link: "https://examine.com/supplements/casein-protein/", icon: "🌙", description: "Pomalý protein, uvolňuje aminokyseliny až 7 hodin.", benefits: ["Noční regenerace", "Antikatabolický"], dosage: "30g", timing: "Před spaním", synergy: ["Probiotika"], conflict: [] },
+            { id: 4, name: "L-Citrulin Malát", category: "Síla", confidence: "high", link: "https://examine.com/supplements/citrulline/", icon: "🍉", description: "Zvyšuje oxid dusnatý (NO) a průtok krve svaly. Účinnější než Arginin.", benefits: ["Svalová pumpa", "Oddálení únavy", "Snížení bolesti"], dosage: "6-8g", timing: "Před tréninkem (30 min)", synergy: ["Sůl", "Arginin"], conflict: [] },
+            { id: 5, name: "Beta-Alanin", category: "Síla", confidence: "high", link: "https://examine.com/supplements/beta-alanine/", icon: "🐜", description: "Zvyšuje hladinu karnosinu, snižuje zakyselení (laktát).", benefits: ["Svalová vytrvalost", "Výkon v sériích 60s+"], dosage: "3-5g", timing: "Před tréninkem", synergy: ["Kreatin"], conflict: [] },
+            { id: 6, name: "EAA (Esenciální AK)", category: "Síla", confidence: "medium", link: "https://examine.com/supplements/bcaa/", icon: "🧬", description: "Komplex 9 esenciálních aminokyselin. Užitečné, pokud není dost bílkovin ve stravě.", benefits: ["Ochrana svalů", "Regenerace bez kalorií"], dosage: "10-15g", timing: "Během tréninku (Intra)", synergy: ["Elektrolyty"], conflict: [] },
+            { id: 7, name: "HMB", category: "Síla", confidence: "medium", link: "https://examine.com/supplements/hmb/", icon: "🛑", description: "Metabolit leucinu. Data jsou smíšená, nejlepší efekt u začátečníků.", benefits: ["Antikatabolický efekt", "Regenerace"], dosage: "3g", timing: "Před tréninkem", synergy: ["Kreatin"], conflict: [] },
+            { id: 8, name: "Betain (Trimethylglycin)", category: "Síla", confidence: "medium", link: "https://examine.com/supplements/betaine/", icon: "🚀", description: "Osmolyt podporující hydrataci buněk a výbušnost.", benefits: ["Výbušná síla", "Proteosyntéza"], dosage: "2.5g", timing: "Před tréninkem", synergy: ["Kreatin"], conflict: [] },
+            { id: 9, name: "Taurin", category: "Síla", confidence: "medium", link: "https://examine.com/supplements/taurine/", icon: "🐂", description: "Aminokyselina pro hydrataci buněk a funkci nervů.", benefits: ["Prevence křečí", "Srdeční zdraví"], dosage: "1-2g", timing: "Před tréninkem", synergy: ["Elektrolyty"], conflict: [] },
+            { id: 10, name: "Elektrolyty", category: "Síla", confidence: "high", link: "https://pubmed.ncbi.nlm.nih.gov/?term=electrolytes+exercise+hydration", icon: "💧", description: "Minerály (Na, K, Mg) ztracené potem. Kritické pro výkon.", benefits: ["Hydratace", "Výkon", "Proti křečím"], dosage: "Dle pocení", timing: "Během tréninku", synergy: ["Voda", "Sacharidy"], conflict: [] },
+            { id: 11, name: "Arginin A-KG", category: "Síla", confidence: "medium", link: "https://examine.com/supplements/arginine/", icon: "🩸", description: "Prekurzor NO. Často špatná vstřebatelnost, citrulin je lepší volba.", benefits: ["Krátkodobé prokrvení"], dosage: "3-5g", timing: "Před tréninkem", synergy: ["Citrulin"], conflict: [] },
+            { id: 12, name: "Maltodextrin / Cluster Dextrin", category: "Síla", confidence: "high", link: "https://examine.com/supplements/carbohydrates/", icon: "🍬", description: "Rychlé sacharidy pro doplnění glykogenu.", benefits: ["Okamžitá energie", "Regenerace"], dosage: "30-50g", timing: "Po tréninku / Při dlouhém výkonu", synergy: ["Protein", "Kreatin"], conflict: ["Vláknina (zpomaluje)"] },
+
+            // --- KATEGORIE: ENERGIE A NOOTROPIKA ---
+            { id: 13, name: "Kofein Anhydrous", category: "Energie", confidence: "high", link: "https://examine.com/supplements/caffeine/", icon: "☕", description: "Nejúčinnější stimulant CNS. Blokuje adenosinové receptory.", benefits: ["Bdělost", "Soustředění", "Výkon"], dosage: "3-6 mg/kg", timing: "Před tréninkem (ne večer)", synergy: ["L-Theanin"], conflict: ["Melatonin", "GABA"] },
+            { id: 14, name: "L-Theanin", category: "Energie", confidence: "high", link: "https://examine.com/supplements/theanine/", icon: "🧘", description: "Aminokyselina ze zeleného čaje. Tlumí 'jitter' a úzkost z kofeinu.", benefits: ["Klidný focus", "Relaxace bez únavy"], dosage: "100-200mg", timing: "S kofeinem", synergy: ["Kofein"], conflict: [] },
+            { id: 15, name: "L-Tyrosin", category: "Energie", confidence: "high", link: "https://examine.com/supplements/l-tyrosine/", icon: "🧠", description: "Prekurzor dopaminu. Klíčový pro kognici pod akutním stresem.", benefits: ["Focus ve stresu", "Nálada"], dosage: "1-2g", timing: "Před tréninkem / Ráno", synergy: ["Kofein", "B-Komplex"], conflict: [] },
+            { id: 16, name: "Alpha GPC", category: "Nootropika", confidence: "medium", link: "https://examine.com/supplements/alpha-gpc/", icon: "💡", description: "Vysoce biodostupná forma cholinu. Palivo pro acetylcholin.", benefits: ["Paměť", "Učení", "Síla (neuromuskulární)"], dosage: "300-600mg", timing: "Před prací / tréninkem", synergy: ["Huperzine A"], conflict: [] },
+            { id: 17, name: "Lví hříva (Lion's Mane)", category: "Nootropika", confidence: "medium", link: "https://examine.com/supplements/yamabushitake/", icon: "🍄", description: "Mediciální houba podporující růst neuronů (NGF). Dlouhodobý efekt.", benefits: ["Dlouhodobá paměť", "Nervová soustava"], dosage: "1-2g (extrakt)", timing: "Ráno", synergy: ["Káva"], conflict: [] },
+            { id: 18, name: "Rhodiola Rosea", category: "Energie", confidence: "medium", link: "https://examine.com/supplements/rhodiola-rosea/", icon: "🌺", description: "Adaptogen snižující vnímání únavy a stresu.", benefits: ["Mentální energie", "Proti vyhoření"], dosage: "300-500mg", timing: "Ráno / Před tréninkem", synergy: ["Ashwagandha"], conflict: [] },
+            { id: 19, name: "Yerba Maté", category: "Energie", confidence: "high", link: "https://examine.com/supplements/yerba-mate/", icon: "🧉", description: "Přírodní zdroj kofeinu s antioxidanty.", benefits: ["Jemná energie", "Trávení"], dosage: "Dle chuti", timing: "Dopoledne", synergy: [], conflict: [] },
+            { id: 20, name: "MCT Olej (C8)", category: "Energie", confidence: "medium", link: "https://examine.com/supplements/mct-oil/", icon: "🥥", description: "Tuky, které se mění přímo na ketony. Energie pro mozek bez inzulínu.", benefits: ["Okamžitá energie", "Hlad"], dosage: "10-15ml", timing: "Ráno / Před tréninkem", synergy: ["Káva"], conflict: ["Vysoké sacharidy (trávení)"] },
+            { id: 21, name: "Huperzine A", category: "Nootropika", confidence: "medium", link: "https://examine.com/supplements/huperzine-a/", icon: "🌿", description: "Inhibitor rozkladu acetylcholinu. Silný ale vyžaduje cyklování.", benefits: ["Krátkodobá paměť", "Soustředění"], dosage: "200mcg", timing: "Ráno (cyklovat!)", synergy: ["Alpha GPC"], conflict: [] },
+            { id: 22, name: "Bacopa Monnieri", category: "Nootropika", confidence: "medium", link: "https://examine.com/supplements/bacopa-monnieri/", icon: "🌱", description: "Bylina pro dlouhodobé zlepšení paměti. Efekt nastupuje po týdnech.", benefits: ["Paměť", "Úzkost"], dosage: "300mg", timing: "S jídlem (tuky)", synergy: [], conflict: [] },
+            { id: 23, name: "Panax Ginseng (Ženšen)", category: "Energie", confidence: "medium", link: "https://examine.com/supplements/panax-ginseng/", icon: "🧧", description: "Tradiční bylina pro vitalitu.", benefits: ["Energie", "Imunita"], dosage: "200-400mg", timing: "Ráno", synergy: [], conflict: [] },
+
+            // --- KATEGORIE: ZDRAVÍ A HORMONY ---
+            { id: 24, name: "Hořčík Bisglycinát", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/magnesium/", icon: "💤", description: "Chelátová forma hořčíku. Vysoká vstřebatelnost, nedráždí.", benefits: ["Svalová relaxace", "Nervy", "Spánek"], dosage: "300-400mg", timing: "Večer", synergy: ["Zinek", "B6"], conflict: ["Vápník (ve stejný čas)"] },
+            { id: 25, name: "Zinek Bisglycinát", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/zinc/", icon: "🛡️", description: "Klíčový pro imunitu a testosteron. Mnoho lidí má deficit.", benefits: ["Testosteron", "Imunita", "Pleť"], dosage: "15-30mg", timing: "Večer s jídlem", synergy: ["Hořčík"], conflict: ["Vápník", "Železo", "Vláknina"] },
+            { id: 26, name: "Omega-3 (EPA/DHA)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/fish-oil/", icon: "🐟", description: "Rybí olej. Silný protizánětlivý efekt.", benefits: ["Srdce", "Mozek", "Klouby"], dosage: "3-4g (kvalitního oleje)", timing: "S jídlem", synergy: ["Vitamín D3"], conflict: [] },
+            { id: 27, name: "Vitamín D3", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/vitamin-d/", icon: "☀️", description: "Hormonální vitamín. Zásadní pro imunitu.", benefits: ["Imunita", "Kosti", "Testosteron"], dosage: "2000-5000 IU", timing: "Ráno s tuky", synergy: ["Vitamín K2"], conflict: ["Melatonin (ruší spánek)"] },
+            { id: 28, name: "Vitamín K2 (MK-7)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/vitamin-k/", icon: "🥦", description: "Směruje vápník do kostí místo do cév.", benefits: ["Zdravé cévy", "Pevné kosti"], dosage: "100mcg", timing: "S jídlem", synergy: ["Vitamín D3"], conflict: [] },
+            { id: 29, name: "Multivitamín", category: "Zdraví", confidence: "medium", link: "https://pubmed.ncbi.nlm.nih.gov/?term=multivitamin+health+benefits", icon: "🥗", description: "Základní pojistka mikroživin. Vstřebatelnost závisí na formě.", benefits: ["Prevence deficitů"], dosage: "1 dávka", timing: "Ráno s jídlem", synergy: [], conflict: [] },
+            { id: 30, name: "Ashwagandha (KSM-66)", category: "Zdraví", confidence: "medium", link: "https://examine.com/supplements/ashwagandha/", icon: "🌿", description: "Silný adaptogen. Snižuje kortizol, což nepřímo zvyšuje testosteron.", benefits: ["Lepší spánek", "Méně stresu", "Testosteron"], dosage: "300-600mg", timing: "Večer", synergy: [], conflict: [] },
+            { id: 31, name: "Vitamín C", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/vitamin-c/", icon: "🍊", description: "Antioxidant nutný pro syntézu kolagenu.", benefits: ["Imunita", "Zdraví dásní/kůže"], dosage: "500-1000mg", timing: "Ráno", synergy: ["Kolagen"], conflict: ["Po tréninku (tlumí adaptaci)"] },
+            { id: 32, name: "Kolagen (Hydrolyzovaný)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/collagen/", icon: "🦴", description: "Strukturální protein. Nutný pro šlachy a klouby.", benefits: ["Klouby", "Vlasy", "Kůže"], dosage: "10-20g", timing: "Kdykoliv", synergy: ["Vitamín C"], conflict: [] },
+            { id: 33, name: "NAC (N-Acetyl Cysteine)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/n-acetylcysteine/", icon: "🧹", description: "Prekurzor Glutathionu (hlavní antioxidant). Čistí játra.", benefits: ["Zdraví jater", "Hleny/Dýchání"], dosage: "600-1200mg", timing: "Ráno", synergy: ["Glycin"], conflict: ["Alkohol (současně)"] },
+            { id: 34, name: "Kurkumin (s Piperinem)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/curcumin/", icon: "🍛", description: "Silný protizánětlivý extrakt.", benefits: ["Bolest kloubů", "Zánětlivost"], dosage: "500mg", timing: "S jídlem", synergy: ["Pepř (Piperin)"], conflict: [] },
+            { id: 35, name: "Probiotika", category: "Zdraví", confidence: "medium", link: "https://examine.com/supplements/probiotics/", icon: "🦠", description: "Živé kultury. Účinnost závisí na kmenu.", benefits: ["Trávení", "Imunita", "Nálada"], dosage: "Dle obalu", timing: "Ráno na lačno", synergy: ["Vláknina"], conflict: ["Antibiotika"] },
+            { id: 36, name: "Vitamín B-Complex", category: "Zdraví", confidence: "high", link: "https://pubmed.ncbi.nlm.nih.gov/?term=vitamin+b+complex+benefits", icon: "⚡", description: "Skupina vitamínů pro energetický metabolismus.", benefits: ["Energie", "Nervová soustava"], dosage: "1 tbl", timing: "Ráno", synergy: [], conflict: [] },
+            { id: 37, name: "Boron (Bór)", category: "Zdraví", confidence: "medium", link: "https://examine.com/supplements/boron/", icon: "🪨", description: "Stopový prvek, může snižovat SHBG a uvolňovat testosteron.", benefits: ["Volný testosteron", "Kosti"], dosage: "3-9mg", timing: "Ráno", synergy: [], conflict: [] },
+            { id: 38, name: "Tongkat Ali", category: "Zdraví", confidence: "medium", link: "https://examine.com/supplements/tongkat-ali/", icon: "🪵", description: "Bylina (Eurycoma). Populární pro libido, ale pozor na kvalitu.", benefits: ["Libido", "Volný testosteron"], dosage: "200-400mg", timing: "Ráno (cyklovat)", synergy: ["Fadogia Agrestis"], conflict: [] },
+            { id: 39, name: "Maca Peruánská", category: "Zdraví", confidence: "medium", link: "https://examine.com/supplements/maca/", icon: "🍠", description: "Kořen pro vitalitu. Neovlivňuje testosteron, ale libido ano.", benefits: ["Libido", "Energie"], dosage: "2-5g", timing: "Ráno", synergy: [], conflict: [] },
+            { id: 40, name: "Coenzyme Q10 (Ubiquinol)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/coenzyme-q10/", icon: "❤️", description: "Energie pro mitochondrie. Důležitý po 30. roce života.", benefits: ["Zdraví srdce", "Energie ve stáří"], dosage: "100-200mg", timing: "S jídlem (tuky)", synergy: [], conflict: [] },
+
+            // --- KATEGORIE: SPÁNEK A RELAXACE ---
+            { id: 41, name: "Melatonin", category: "Spánek", confidence: "high", link: "https://examine.com/supplements/melatonin/", icon: "🌙", description: "Hormon tmy. Signalizuje čas spát, nefunguje jako sedativum.", benefits: ["Rychlejší usnutí"], dosage: "0.5-3mg", timing: "30 min před spaním", synergy: ["Brýle blokující modré světlo"], conflict: ["Kofein", "Alkohol"] },
+            { id: 42, name: "Glycin", category: "Spánek", confidence: "high", link: "https://examine.com/supplements/glycine/", icon: "🍚", description: "Aminokyselina snižující tělesnou teplotu a uklidňující mozek.", benefits: ["Hluboký spánek", "Klid"], dosage: "3-5g", timing: "Před spaním", synergy: ["NAC", "Hořčík"], conflict: [] },
+            { id: 43, name: "Meduňka lékařská", category: "Spánek", confidence: "medium", link: "https://examine.com/supplements/lemon-balm/", icon: "🍃", description: "Tradiční bylina pro uklidnění GABA receptorů.", benefits: ["Proti stresu", "Uklidnění"], dosage: "300-600mg", timing: "Večer", synergy: ["Valeriána"], conflict: [] },
+            { id: 44, name: "Valeriána (Kozlík)", category: "Spánek", confidence: "medium", link: "https://examine.com/supplements/valerian/", icon: "🌿", description: "Silná bylina pro sedaci. Může způsobovat ranní ospalost.", benefits: ["Rychlé usnutí"], dosage: "300-500mg", timing: "Před spaním", synergy: ["Meduňka"], conflict: [] },
+            { id: 45, name: "GABA", category: "Spánek", confidence: "medium", link: "https://examine.com/supplements/gaba/", icon: "🧘‍♂️", description: "Neurotransmiter. Špatně prochází do mozku, ale může uvolnit tělo.", benefits: ["Relaxace", "Růstový hormon"], dosage: "500-1000mg", timing: "Večer", synergy: [], conflict: [] },
+            { id: 46, name: "Tryptofan", category: "Spánek", confidence: "high", link: "https://examine.com/supplements/tryptophan/", icon: "🦃", description: "Stavební kámen pro serotonin a melatonin.", benefits: ["Nálada", "Spánek"], dosage: "500-1000mg", timing: "Večer", synergy: ["Sacharidy"], conflict: ["Antidepresiva (SSRI)"] },
+            { id: 47, name: "Apigenin", category: "Spánek", confidence: "medium", link: "https://examine.com/supplements/apigenin/", icon: "🌼", description: "Bioflavonoid z heřmánku. Uklidňuje mysl.", benefits: ["Snadné usínání", "Prostata"], dosage: "50mg", timing: "Večer", synergy: ["Hořčík", "Theanin"], conflict: [] },
+            { id: 48, name: "Tart Cherry (Višeň)", category: "Spánek", confidence: "high", link: "https://examine.com/supplements/tart-cherry/", icon: "🍒", description: "Přírodní zdroj melatoninu a silných antioxidantů.", benefits: ["Regenerace", "Spánek"], dosage: "Dle produktu", timing: "Večer", synergy: [], conflict: [] },
+            { id: 49, name: "Glutamin", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/glutamine/", icon: "🛡️", description: "Palivo pro imunitu a střevní buňky.", benefits: ["Imunita", "Střeva"], dosage: "5g", timing: "Po tréninku / Večer", synergy: [], conflict: [] },
+            { id: 50, name: "Psyllium (Vláknina)", category: "Zdraví", confidence: "high", link: "https://examine.com/supplements/psyllium/", icon: "🌾", description: "Rozpustná vláknina. Mechanicky čistí střeva.", benefits: ["Trávení", "Cholesterol"], dosage: "5-10g", timing: "Ráno/Večer (s vodou)", synergy: ["Probiotika"], conflict: ["Léky (snižuje vstřebávání)"] }
+        ];
+
+        // --- 2. STATE & SETUP ---
+        const state = { stack: new Set(), weight: 80, gender: "male", search: "", category: "All", savedStacks: {} };
+        const grid = document.getElementById("catalog-grid");
+        const wInput = document.getElementById("user-weight");
+        const modal = document.getElementById("modal-backdrop");
+        const modalContent = document.getElementById("modal-content");
+
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            let color = type === 'error' ? 'bg-red-500' : (type === 'warn' ? 'bg-yellow-500' : 'bg-green-500');
+            t.className = `toast ${color} text-white px-4 py-3 rounded-lg shadow-xl font-medium flex items-center gap-3`;
+            t.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+        }
+
+        function init() {
+            // --- INICIALIZACE Z LOKÁLNÍHO ÚLOŽIŠTĚ ---
+            try {
+                const s = JSON.parse(localStorage.getItem('bioStack_pro_final'));
+                if (s) {
+                    state.stack = new Set(s.stack);
+                    state.weight = s.weight || 80;
+                    state.gender = s.gender || "male";
+                    state.savedStacks = s.savedStacks || {};
+                }
+            } catch (e) { }
+
+            wInput.value = state.weight;
+            document.getElementById("user-gender").value = state.gender;
+
+            // --- VYKRESLENÍ PRVKŮ ---
+            render();
+            analyze();
+            renderSavedProfiles();
+            setupEvents();
+        }
+
+        function save() {
+            localStorage.setItem('bioStack_pro_final', JSON.stringify({
+                stack: [...state.stack],
+                weight: state.weight,
+                gender: state.gender,
+                savedStacks: state.savedStacks
+            }));
+        }
+
+        function validateWeight() {
+            let v = parseInt(wInput.value);
+            if (isNaN(v)) v = 80;
+            if (v < 40) { v = 40; showToast("Minimum je 40kg", "warn"); }
+            if (v > 180) { v = 180; showToast("Maximum je 180kg", "warn"); }
+            state.weight = v; wInput.value = v;
+            save(); analyze();
+        }
+
+        // --- LOGIC: Dosage & Confidence ---
+        function getDosage(item) {
+            const w = state.weight;
+            if (item.id === 2) return `${Math.round(w * 0.35)}g (dle stravy)`; // Protein
+            if (item.id === 13) return `max 400 mg (bezpečí)`;
+            return item.dosage;
+        }
+
+        function analyze() {
+            const items = [...state.stack].map(id => supplements.find(s => s.id === id));
+
+            // Profile & Count
+            document.getElementById("profile-display").innerText = `${state.gender === 'male' ? 'Muž' : 'Žena'}, ${state.weight}kg`;
+            document.getElementById("stack-count").innerText = items.length;
+
+            const empty = document.getElementById("stack-empty");
+            const analysis = document.getElementById("stack-analysis");
+
+            if (items.length === 0) {
+                empty.classList.remove("hidden");
+                analysis.classList.add("hidden");
+                return;
+            }
+            empty.classList.add("hidden");
+            analysis.classList.remove("hidden");
+
+            // Slots
+            const slots = {
+                morning: document.getElementById("schedule-morning"),
+                pre: document.getElementById("schedule-pre"),
+                post: document.getElementById("schedule-post"),
+                evening: document.getElementById("schedule-evening")
+            };
+            Object.values(slots).forEach(el => el.innerHTML = "");
+
+            items.forEach(i => {
+                const dose = getDosage(i);
+                // Confidence color for badge border
+                const confColor = i.confidence === 'high' ? 'border-green-300' : 'border-yellow-300';
+                
+                const badge = `<div class="flex justify-between items-center bg-white border-l-4 ${confColor} shadow-sm p-2 rounded-r text-xs mb-1">
+                    <span class="font-bold text-slate-700">${i.name}</span>
+                    <span class="text-brand-600 font-mono">${dose}</span>
+                </div>`;
+
+                const t = i.timing.toLowerCase();
+                let placed = false;
+                if (t.match(/ráno|dopoledne/)) { slots.morning.innerHTML += badge; placed = true; }
+                if (t.match(/před/)) { slots.pre.innerHTML += badge; placed = true; }
+                if (t.match(/po tréninku/)) { slots.post.innerHTML += badge; placed = true; }
+                if (t.match(/večer|spaním/)) { slots.evening.innerHTML += badge; placed = true; }
+                if (!placed) slots.morning.innerHTML += badge;
+            });
+
+            // Warnings logic
+            const warns = [];
+            for (let i = 0; i < items.length; i++) {
+                for (let j = i + 1; j < items.length; j++) {
+                    const a = items[i], b = items[j];
+                    if (a.conflict && a.conflict.some(c => b.name.includes(c))) warns.push(`${a.name} vs ${b.name}`);
+                    if ((a.name.includes("Zinek") && b.name.includes("Vápník")) || (b.name.includes("Zinek") && a.name.includes("Vápník"))) warns.push("Vápník blokuje Zinek (2h rozestup)");
+                }
+            }
+            const wList = document.getElementById("warnings-list");
+            wList.innerHTML = warns.map(w => `<li>${w}</li>`).join("");
+            document.getElementById("warnings-container").classList.toggle("hidden", warns.length === 0);
+
+            // Suggestions logic
+            const suggs = [];
+            const ids = items.map(i => i.id);
+            if (ids.includes(1) && !ids.includes(8) && !ids.includes(5)) suggs.push("Ke Kreatinu zkus Beta-Alanin pro výdrž.");
+            if (ids.includes(10) && !ids.includes(13)) suggs.push("D3 funguje lépe s K2.");
+            if (ids.includes(25) && !ids.includes(24)) suggs.push("Zinek je dobré brát s Hořčíkem (ZMA efekt).");
+            
+            const sList = document.getElementById("suggestions-list");
+            sList.innerHTML = suggs.map(s => `<li>${s}</li>`).join("");
+            document.getElementById("suggestions-container").classList.toggle("hidden", suggs.length === 0);
+        }
+
+        function render() {
+            grid.innerHTML = "";
+            const filtered = supplements.filter(i => {
+                const term = state.search.toLowerCase();
+                const cat = state.category;
+                return (cat === "All" || i.category === cat) && (i.name.toLowerCase().includes(term) || i.description.toLowerCase().includes(term));
+            });
+
+            if (filtered.length === 0) { grid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-10">Nic nenalezeno</div>`; return; }
+
+            filtered.forEach(i => {
+                const active = state.stack.has(i.id);
+                const btnIcon = active ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>` : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>`;
+                const btnClass = active ? "bg-green-500 text-white shadow-green-200" : "bg-white text-slate-400 border border-slate-200 hover:border-brand-500 hover:text-brand-500";
+                
+                // Confidence visual
+                const confClass = i.confidence === 'high' ? 'conf-high' : 'conf-medium';
+
+                grid.innerHTML += `
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm card-hover flex flex-col relative ${confClass}">
+                    <div class="flex justify-between items-start mb-3 cursor-pointer" onclick="openModal(${i.id})">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-xl text-2xl icon-bg-${i.category}">${i.icon}</div>
+                        <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full cat-badge-${i.category}">${i.category}</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg mb-1 leading-tight cursor-pointer hover:text-brand-600 transition" onclick="openModal(${i.id})">${i.name}</h3>
+                    <p class="text-sm text-slate-500 mb-4 line-clamp-2">${i.description}</p>
+                    <div class="mt-auto pt-4 border-t border-slate-50 flex justify-between items-center">
+                        <button onclick="openModal(${i.id})" class="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase">Detail</button>
+                        <button onclick="toggle(${i.id})" class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm transition-all ${btnClass}">${btnIcon}</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function toggle(id) {
+            if (state.stack.has(id)) { state.stack.delete(id); showToast("Odebráno", "warn"); }
+            else { state.stack.add(id); showToast("Přidáno"); }
+            save(); render(); analyze();
+
+            // Update modal btn
+            const btn = document.getElementById("m-toggle-btn");
+            if (btn && !modal.classList.contains("hidden")) {
+                const active = state.stack.has(id);
+                btn.innerText = active ? "Odebrat" : "Přidat do Stacku";
+                btn.className = `w-full sm:w-auto text-white px-8 py-3 rounded-xl font-semibold transition shadow-lg ${active ? 'bg-red-500 hover:bg-red-600' : 'bg-slate-900 hover:bg-slate-800'}`;
+            }
+        }
+
+        function clearStack() {
+            if (confirm("Opravdu vymazat celý stack?")) { state.stack.clear(); save(); render(); analyze(); showToast("Stack vymazán", "warn"); }
+        }
+
+        // --- EXPORT & PROFILES & COPY ---
+        
+        // Helper: Generates the report text for both export and copy
+        function getStackReportContent() {
+            const items = [...state.stack].map(id => supplements.find(s => s.id === id));
+            const date = new Date().toLocaleDateString('cs-CZ');
+            
+            let txt = `SUPPLEMENT GUIDE REPORT\nDatum: ${date}\nProfil: ${state.gender === 'male'?'Muž':'Žena'}, ${state.weight}kg\n\n`;
+            txt += `--- ROZVRH DNE ---\n`;
+            
+            const slots = { "Ráno / Dopoledne": [], "Před tréninkem": [], "Po tréninku": [], "Večer": [] };
+            items.forEach(i => {
+                const t = i.timing.toLowerCase();
+                const line = `- ${i.name} (${getDosage(i)})`;
+                if(t.match(/ráno|dopoledne/)) slots["Ráno / Dopoledne"].push(line);
+                else if(t.match(/před/)) slots["Před tréninkem"].push(line);
+                else if(t.match(/po/)) slots["Po tréninku"].push(line);
+                else slots["Večer"].push(line);
+            });
+
+            for(const [time, lines] of Object.entries(slots)) {
+                if(lines.length) {
+                    txt += `\n[ ${time.toUpperCase()} ]\n${lines.join('\n')}\n`;
+                }
+            }
+            txt += `\n--- POZNÁMKY ---\nVygenerováno aplikací Supplement Guide.`;
+            return txt;
+        }
+
+        function saveStackProfile() {
+            if(state.stack.size === 0) return showToast("Stack je prázdný", "warn");
+            const name = prompt("Pojmenuj tento stack (např. 'Objem Zima'):");
+            if(name) {
+                state.savedStacks[name] = [...state.stack];
+                save(); renderSavedProfiles(); showToast("Profil uložen");
+            }
+        }
+
+        function loadProfile(name) {
+            if(confirm(`Načíst stack "${name}"? Současný výběr bude přepsán.`)) {
+                state.stack = new Set(state.savedStacks[name]);
+                save(); render(); analyze(); showToast("Profil načten");
+            }
+        }
+
+        function deleteProfile(name) {
+            if(confirm(`Smazat profil "${name}"?`)) {
+                delete state.savedStacks[name];
+                save(); renderSavedProfiles();
+            }
+        }
+
+        function renderSavedProfiles() {
+            const list = document.getElementById("saved-profiles-list");
+            const container = document.getElementById("saved-profiles-area");
+            const names = Object.keys(state.savedStacks);
+            
+            if(names.length === 0) { container.classList.add("hidden"); return; }
+            container.classList.remove("hidden");
+            
+            list.innerHTML = names.map(n => `
+                <div class="flex justify-between items-center bg-slate-50 p-2 rounded text-xs">
+                    <span class="font-bold text-slate-700 cursor-pointer hover:text-brand-600" onclick="loadProfile('${n}')">${n}</span>
+                    <button onclick="deleteProfile('${n}')" class="text-slate-400 hover:text-red-500">✕</button>
+                </div>
+            `).join("");
+        }
+
+        function exportStackText() {
+            if (state.stack.size === 0) return showToast("Stack je prázdný", "warn");
+            const txt = getStackReportContent();
+            const date = new Date().toLocaleDateString('cs-CZ');
+
+            const blob = new Blob([txt], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Muj_Stack_${date}.txt`;
+            a.click();
+            showToast("Soubor stažen");
+        }
+        
+        async function copyStackToClipboard() {
+             if (state.stack.size === 0) return showToast("Stack je prázdný", "warn");
+             const txt = getStackReportContent();
+             try {
+                 // Používá moderní Clipboard API
+                 await navigator.clipboard.writeText(txt);
+                 showToast("Zkopírováno do schránky");
+             } catch (err) {
+                 // Fallback pro starší prohlížeče
+                 showToast("Chyba kopírování", "error");
+             }
+        }
+
+        // --- MODAL ---
+        function openModal(id) {
+            const i = supplements.find(s => s.id === id);
+            
+            // Set Dynamic Colors/Classes
+            const catClass = `cat-badge-${i.category}`;
+            const catEl = document.getElementById("m-category");
+            catEl.className = `text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${catClass}`;
+            document.getElementById("m-icon").className = `w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner icon-bg-${i.category}`;
+            document.getElementById("m-icon").innerHTML = i.icon;
+
+            // Confidence Badge as Link
+            const confEl = document.getElementById("m-confidence");
+            const isHigh = i.confidence === 'high';
+            const label = isHigh ? "✅ Ověřeno" : "⚠️ Méně dat";
+            const bgClass = isHigh ? "badge-conf-high" : "badge-conf-medium";
+            
+            // Generate Clickable Badge with External Link Icon
+            confEl.innerHTML = `
+                <a href="${i.link}" target="_blank" class="badge-conf-link text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${bgClass}" title="Otevřít vědecký zdroj">
+                    ${label}
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            `;
+
+            document.getElementById("m-category").innerText = i.category;
+            document.getElementById("m-title").innerText = i.name;
+            document.getElementById("m-desc").innerText = i.description;
+            document.getElementById("m-dosage").innerText = getDosage(i);
+            document.getElementById("m-timing").innerText = i.timing;
+
+            const list = (arr, el) => document.getElementById(el).innerHTML = arr.length ? arr.map(x => `<span class="inline-block bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded mr-1 mb-1 border border-slate-200">${x}</span>`).join("") : '<span class="text-slate-300 italic text-xs">Žádné</span>';
+            list(i.synergy || [], "m-synergy"); 
+            list(i.conflict || [], "m-conflict");
+            document.getElementById("m-benefits").innerHTML = i.benefits.map(b => `<li>✅ ${b}</li>`).join("");
+
+            const btn = document.getElementById("m-toggle-btn");
+            const active = state.stack.has(id);
+            btn.innerText = active ? "Odebrat" : "Přidat do Stacku";
+            btn.className = `w-full sm:w-auto text-white px-8 py-3 rounded-xl font-semibold transition shadow-lg ${active ? 'bg-red-500 hover:bg-red-600' : 'bg-slate-900 hover:bg-slate-800'}`;
+            btn.onclick = () => { toggle(id); closeModal(); };
+
+            modal.classList.remove("hidden");
+            setTimeout(() => { modal.classList.remove("opacity-0"); modalContent.classList.remove("scale-95"); modalContent.classList.add("scale-100"); }, 10);
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            modal.classList.add("opacity-0"); modalContent.classList.remove("scale-100"); modalContent.classList.add("scale-95");
+            setTimeout(() => { modal.classList.add("hidden"); document.body.style.overflow = "auto"; }, 300);
+        }
+
+        function setupEvents() {
+            wInput.addEventListener("change", validateWeight);
+            document.getElementById("user-gender").addEventListener("change", (e) => { state.gender = e.target.value; save(); analyze(); });
+            document.getElementById("search-input").addEventListener("input", (e) => { state.search = e.target.value; render(); });
+
+            document.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".filter-btn").forEach(b => b.className = "filter-btn px-4 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition");
+                    btn.className = "filter-btn active px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white shadow transition transform hover:scale-105";
+                    state.category = btn.dataset.cat; render();
+                });
+            });
+
+            modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', e => { if (e.key === "Escape") closeModal(); });
+        }
+
+        init();
+    </script>
+</body>
+</html>
