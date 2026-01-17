@@ -1,0 +1,408 @@
+/* =================================================================
+   1. CORE VARIABLES & THEME SETUP (iOS 26 AESTHETIC)
+   ================================================================= */
+:root {
+    /* --- Brand Colors (Vibrant Blue) --- */
+    --brand-primary: #007AFF;
+    --brand-hover: #0062cc;
+    --brand-gradient: linear-gradient(135deg, #007AFF, #5AC8FA);
+    
+    /* --- Semantic Colors --- */
+    --success: #34C759;
+    --warning: #FF9500;
+    --danger: #FF3B30;
+
+    /* --- Light Theme Surfaces --- */
+    --bg-page: #F2F2F7; /* iOS System Gray 6 */
+    --bg-surface: #FFFFFF;
+    --bg-surface-alt: #F9F9FB; /* Sekundární pozadí */
+    --text-primary: #000000;
+    --text-secondary: #8E8E93;
+    --border-color: rgba(0, 0, 0, 0.08);
+
+    /* --- Glassmorphism --- */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-blur: 20px;
+    --glass-saturation: 180%;
+
+    /* --- Animation Physics --- */
+    /* Spring: Pružný pohyb pro tlačítka a modaly */
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    /* Smooth: Plynulý tok pro barvy */
+    --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* --- Tmavý režim (OLED Optimized) --- */
+body.dark {
+    --brand-primary: #0A84FF; /* Světlejší modrá pro lepší čitelnost na černé */
+    
+    --bg-page: #000000; /* True Black */
+    --bg-surface: #1C1C1E; /* iOS Dark Surface */
+    --bg-surface-alt: #2C2C2E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #98989D;
+    --border-color: rgba(255, 255, 255, 0.12);
+
+    --glass-bg: rgba(28, 28, 30, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+/* =================================================================
+   2. GLOBAL RESET & BASE STYLES
+   ================================================================= */
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Plynulé přechody barev při změně tématu */
+    transition: background-color 0.3s var(--ease-smooth),
+                border-color 0.3s var(--ease-smooth),
+                color 0.3s var(--ease-smooth),
+                box-shadow 0.3s var(--ease-smooth);
+}
+
+html {
+    scroll-behavior: smooth;
+    height: 100%;
+}
+
+body {
+    background-color: var(--bg-page) !important;
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Výběr textu */
+::selection {
+    background-color: var(--brand-primary);
+    color: white;
+}
+
+/* =================================================================
+   3. KOMPONENTY: HLAVIČKA (Glass Header)
+   ================================================================= */
+.glass-header {
+    background-color: var(--bg-surface); /* Fallback */
+    border-bottom: 1px solid var(--border-color);
+}
+
+@supports (backdrop-filter: blur(20px)) {
+    .glass-header {
+        background-color: var(--glass-bg) !important;
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    }
+}
+
+/* Sticky prvky */
+.sticky { z-index: 40; }
+
+/* =================================================================
+   4. KOMPONENTY: FILTRY (Oprava Dark Mode)
+   ================================================================= */
+#category-filters {
+    padding-bottom: 4px; /* Prostor pro stín */
+}
+
+/* Tlačítka filtrů - Základ */
+.filter-btn {
+    transition: all 0.3s var(--ease-spring);
+    border: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--bg-surface);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+/* Hover stav filtrů */
+.filter-btn:hover {
+    background-color: var(--bg-surface-alt);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+/* Aktivní stav (High Contrast) */
+.filter-btn.active {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: transparent;
+    transform: scale(1.05);
+}
+
+/* Aktivní stav v Dark Mode (Inverze) */
+body.dark .filter-btn.active {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+/* Neaktivní filtry v Dark Mode */
+body.dark .filter-btn:not(.active) {
+    background-color: #2C2C2E !important; /* Lighter gray */
+    color: #98989D !important;
+    border-color: rgba(255,255,255,0.1);
+}
+
+body.dark .filter-btn:not(.active):hover {
+    background-color: #3A3A3C !important;
+    color: #FFFFFF !important;
+}
+
+/* =================================================================
+   5. KOMPONENTY: MŮJ STACK (KRITICKÁ OPRAVA BAREV)
+   ================================================================= */
+/* Následující pravidla "násilně" přepisují barvy v sidebaru pro Dark Mode,
+   pokud by se nějaké utility třídy nepřepnuly správně. */
+
+/* Pozadí a ohraničení kontejnerů */
+body.dark aside .bg-white {
+    background-color: var(--bg-surface) !important;
+}
+body.dark aside .bg-slate-50 {
+    background-color: var(--bg-surface-alt) !important;
+}
+body.dark aside .border-slate-100,
+body.dark aside .border-slate-200 {
+    border-color: var(--border-color) !important;
+}
+
+/* Texty - Přemapování Slate barev na Dark Mode proměnné */
+body.dark aside .text-slate-900,
+body.dark aside .text-slate-800 {
+    color: var(--text-primary) !important;
+}
+body.dark aside .text-slate-700,
+body.dark aside .text-slate-600 {
+    color: #D1D1D6 !important;
+}
+body.dark aside .text-slate-500 {
+    color: var(--text-secondary) !important;
+}
+body.dark aside .text-slate-400 {
+    color: #636366 !important;
+}
+
+/* Barevné boxy (Varování, Tipy) - Zprůhlednění pro Dark Mode */
+body.dark .bg-red-50 { 
+    background-color: rgba(255, 69, 58, 0.15) !important; 
+    border-color: rgba(255, 69, 58, 0.3) !important; 
+}
+body.dark .text-red-700, body.dark .text-red-800 { 
+    color: #FF453A !important; /* iOS Red */
+}
+
+body.dark .bg-indigo-50 { 
+    background-color: rgba(94, 92, 230, 0.15) !important; 
+    border-color: rgba(94, 92, 230, 0.3) !important; 
+}
+body.dark .text-indigo-700, body.dark .text-indigo-800 { 
+    color: #BF5AF2 !important; /* iOS Purple */
+}
+
+/* Akční tlačítka ve stacku (Uložit, Export...) */
+body.dark aside .bg-slate-100 {
+    background-color: #3A3A3C !important;
+    color: white !important;
+    border-color: rgba(255,255,255,0.1);
+}
+body.dark aside .bg-slate-100:hover {
+    background-color: #48484A !important;
+}
+
+/* Animace mobilního vysouvacího menu */
+#stack-sidebar {
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: transform;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.5); /* Stín pro drawer */
+}
+
+/* =================================================================
+   6. KOMPONENTY: KARTY PRODUKTŮ (GRID)
+   ================================================================= */
+.card-hover {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 24px; /* Více zaoblené rohy (iOS style) */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s var(--ease-spring);
+    cursor: pointer;
+}
+
+/* Dark mode pro karty */
+body.dark .card-hover {
+    background-color: var(--bg-surface);
+    border-color: var(--border-color);
+    box-shadow: none;
+}
+
+/* Hover efekt (Lift & Glow) */
+@media (min-width: 768px) {
+    .card-hover:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: var(--brand-primary);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        z-index: 10;
+    }
+    
+    body.dark .card-hover:hover {
+        box-shadow: 0 0 20px rgba(10, 132, 255, 0.3); /* Neon glow */
+        border-color: var(--brand-primary);
+    }
+}
+
+.card-hover:active {
+    transform: scale(0.96);
+}
+
+/* =================================================================
+   7. IKONY A ŠTÍTKY (BADGES)
+   ================================================================= */
+[class*="cat-badge-"] {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 10px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* Kategorie - Jemné pastelové barvy */
+.cat-badge-Síla { background: rgba(255, 59, 48, 0.1); color: #FF3B30; border: 1px solid rgba(255, 59, 48, 0.2); }
+.cat-badge-Zdraví { background: rgba(52, 199, 89, 0.1); color: #34C759; border: 1px solid rgba(52, 199, 89, 0.2); }
+.cat-badge-Energie { background: rgba(255, 149, 0, 0.1); color: #FF9500; border: 1px solid rgba(255, 149, 0, 0.2); }
+.cat-badge-Spánek { background: rgba(0, 122, 255, 0.1); color: #007AFF; border: 1px solid rgba(0, 122, 255, 0.2); }
+.cat-badge-Nootropika { background: rgba(175, 82, 222, 0.1); color: #AF52DE; border: 1px solid rgba(175, 82, 222, 0.2); }
+
+/* Ikony */
+[class*="icon-bg-"] {
+    display: flex; align-items: center; justify-content: center; border-radius: 18px;
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0));
+}
+.icon-bg-Síla { background-color: rgba(255, 59, 48, 0.1); color: #FF3B30; }
+.icon-bg-Zdraví { background-color: rgba(52, 199, 89, 0.1); color: #34C759; }
+.icon-bg-Energie { background-color: rgba(255, 149, 0, 0.1); color: #FF9500; }
+.icon-bg-Spánek { background-color: rgba(0, 122, 255, 0.1); color: #007AFF; }
+.icon-bg-Nootropika { background-color: rgba(175, 82, 222, 0.1); color: #AF52DE; }
+
+/* Dark mode adjustment pro ikony */
+body.dark [class*="icon-bg-"] {
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+}
+
+/* =================================================================
+   8. MODAL & TOAST
+   ================================================================= */
+#modal-content {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+/* Override pro modal v dark mode */
+body.dark #modal-content h2 { color: #FFF !important; }
+body.dark #modal-content p { color: #E5E5EA !important; }
+body.dark #modal-content .text-slate-600 { color: #98989D !important; }
+body.dark #modal-content .bg-slate-50 { background-color: #2C2C2E !important; border-color: #3A3A3C !important; }
+
+/* Toast Notification */
+#toast-container {
+    position: fixed; bottom: 6rem; left: 50%; transform: translateX(-50%);
+    z-index: 300 !important; display: flex; flex-direction: column-reverse; gap: 12px; pointer-events: none;
+}
+
+@media (min-width: 1024px) { #toast-container { bottom: 3rem; } }
+
+.toast {
+    pointer-events: auto;
+    background: rgba(20, 20, 20, 0.95); /* Tmavé sklo */
+    color: white;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 50px;
+    padding: 14px 28px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; gap: 12px;
+    animation: toastPop 0.5s var(--ease-spring) forwards;
+}
+
+@keyframes toastPop { 
+    0% { opacity:0; transform:translateY(20px) scale(0.8); } 
+    100% { opacity:1; transform:translateY(0) scale(1); } 
+}
+
+/* =================================================================
+   9. FOOTER (KOMPAKTNÍ)
+   ================================================================= */
+footer {
+    position: relative;
+    background-color: var(--bg-surface) !important;
+    border-top: 1px solid var(--border-color) !important;
+    margin-top: auto;
+}
+
+/* Glass efekt pro footer v podporovaných prohlížečích */
+@supports (backdrop-filter: blur(20px)) {
+    footer {
+        background-color: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+    }
+}
+
+body.dark footer {
+    background-color: rgba(28, 28, 30, 0.6) !important;
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+footer a {
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: var(--brand-primary);
+}
+
+/* =================================================================
+   10. MIKRO-ANIMACE (Kliknutí na tlačítko)
+   ================================================================= */
+button:active {
+    transform: scale(0.94);
+    transition: transform 0.1s;
+}
+
+/* Animace načtení karet */
+.card-fade-in { animation: fadeInUp 0.6s var(--ease-spring) forwards; opacity: 0; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* =================================================================
+   11. SCROLLBARS
+   ================================================================= */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: rgba(150, 150, 150, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(150, 150, 150, 0.6); }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
