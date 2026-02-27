@@ -18,72 +18,128 @@ const wInput = document.getElementById("user-weight");
 const modal = document.getElementById("modal-backdrop");
 let currentModalId = null;
 
-// --- 1. INITIALIZATION ---
+// ---------- INIT (replace your current init) ----------
 function init() {
-    // Načtení stavu
+    // Load saved state
     const saved = localStorage.getItem('supplementGuideState');
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
+            // Ensure state exists before merging
+            if (typeof state !== 'object' || !state) state = {};
             Object.assign(state, parsed);
         } catch (e) { console.error("Load Error", e); }
     }
 
-    if (wInput) wInput.value = state.weight;
-    const genderSel = document.getElementById("user-gender");
-    if (genderSel) genderSel.value = state.gender;
+    // Normalize & sanitize state
+    if (typeof state !== 'object' || !state) state = {};
 
-    // Okamžitá aplikace tématu před vykreslením (smooth start)
-    applyTheme(false);
-    updateLanguageUI();
-    render();
-    analyze();
+    // reset filters on load (THIS FIXES YOUR ISSUE)
+    state.search = '';
+    state.category = 'All';
+
+    state.stack = Array.isArray(state.stack) ? state.stack.map(Number) : [];
+    const valid = new Set((supplements || []).map(s => Number(s.id)));
+    state.stack = state.stack.filter(id => valid.has(id));
+
+    save();
+
+    // Safe element lookups (don't rely on global wInput unless it's present)
+    const wEl = (typeof wInput !== 'undefined' && wInput) ? wInput : document.getElementById('weight-input');
+    if (wEl) wEl.value = state.weight ?? 80;
+
+    const genderSel = document.getElementById("user-gender");
+    if (genderSel) genderSel.value = state.gender || 'male';
+
+    // Apply initial UI / data
+    applyTheme && applyTheme(false);
+    updateLanguageUI && updateLanguageUI();
+    render && render();
+    analyze && analyze();
+
+    // Attach app-wide listeners (idempotent)
     setupEvents();
 }
 
+// ---------- SETUP EVENTS (replace your current setupEvents) ----------
 function setupEvents() {
-    document.getElementById("search-input")?.addEventListener("input", (e) => {
-        state.search = e.target.value;
-        render();
-    });
+    // Prevent double-binding if init() is called more than once
+    if (setupEvents._done) return;
+    setupEvents._done = true;
 
-    wInput?.addEventListener("change", (e) => {
-        state.weight = parseInt(e.target.value) || 80;
-        save(); analyze();
-    });
+    // Simple debounce helper
+    const debounce = (fn, wait = 180) => {
+        let t;
+        return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+    };
 
-    document.getElementById("user-gender")?.addEventListener("change", (e) => {
-        state.gender = e.target.value;
-        save(); analyze();
-    });
+    // Search input (debounced)
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", debounce((e) => {
+            state.search = e.target.value;
+            render();
+        }, 160));
+    }
 
+    // Weight input
+    const wEl = (typeof wInput !== 'undefined' && wInput) ? wInput : document.getElementById('weight-input');
+    if (wEl) {
+        wEl.addEventListener("change", (e) => {
+            state.weight = parseInt(e.target.value, 10) || 80;
+            save(); analyze();
+        });
+    }
+
+    // Gender select
+    const genderEl = document.getElementById("user-gender");
+    if (genderEl) {
+        genderEl.addEventListener("change", (e) => {
+            state.gender = e.target.value;
+            save(); analyze();
+        });
+    }
+
+    // Theme toggle
     document.getElementById("theme-toggle")?.addEventListener("click", toggleDarkMode);
 
+    // Language toggle (safe checks)
     document.getElementById("lang-toggle")?.addEventListener("click", () => {
         state.lang = state.lang === "cs" ? "en" : "cs";
         save();
-        updateLanguageUI();
-        render();
-        analyze();
-        if (currentModalId) openModal(currentModalId);
+        updateLanguageUI && updateLanguageUI();
+        render && render();
+        analyze && analyze();
+        if (typeof currentModalId !== 'undefined' && currentModalId) openModal(currentModalId);
         showToast(state.lang === "cs" ? "Jazyk: Čeština" : "Language: English");
     });
 
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".filter-btn").forEach(b => {
-                b.classList.remove("active", "bg-slate-900", "text-white", "dark:bg-white", "dark:text-black");
-                b.classList.add("bg-slate-100", "text-slate-600", "dark:bg-[#2C2C2E]", "dark:text-slate-300");
-            });
-            btn.classList.add("active", "bg-slate-900", "text-white", "dark:bg-white", "dark:text-black");
-            btn.classList.remove("bg-slate-100", "dark:bg-[#2C2C2E]");
-            state.category = btn.dataset.cat;
-            render();
+    // Filter buttons — use delegation when possible
+    // Prefer a container with id="filters" (add it if you don't have one), otherwise fallback to document
+    const filtersContainer = document.getElementById("filters") || document;
+    filtersContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest && e.target.closest(".filter-btn");
+        if (!btn) return;
+
+        // Visual update (single source)
+        document.querySelectorAll(".filter-btn").forEach(b => {
+            b.classList.remove("active", "bg-slate-900", "text-white", "dark:bg-white", "dark:text-black");
+            b.classList.add("bg-slate-100", "text-slate-600", "dark:bg-[#2C2C2E]", "dark:text-slate-300");
         });
+        btn.classList.add("active", "bg-slate-900", "text-white", "dark:bg-white", "dark:text-black");
+        btn.classList.remove("bg-slate-100", "dark:bg-[#2C2C2E]");
+
+        state.category = btn.dataset.cat || "All";
+        render();
     });
 
-    if (modal) modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === "Escape") closeModal(); });
+    // Modal close by clicking backdrop
+    if (typeof modal !== 'undefined' && modal) {
+        modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+    }
+
+    // Escape to close modal — safe wrapper
+    document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
 }
 
 // --- 2. THEME ENGINE (SMOOTH TRANSITION) ---
@@ -156,38 +212,61 @@ function updateLanguageUI() {
 function render() {
     if (!grid) return;
     const l = state.lang;
-    const t = uiTranslations[l];
+    const t = uiTranslations?.[l] || {};
+    const cats = t.cats || {};
 
-    const filtered = supplements.filter(item => {
-        const term = (state.search || "").toLowerCase();
-        const iName = (item.name[l] || item.name.cs).toLowerCase();
-        const catMatch = state.category === "All" || item.category === state.category;
-        return catMatch && iName.includes(term);
-    });
+    try {
+        const filtered = supplements.filter(item => {
+            const term = (state.search || "").toLowerCase();
+            const iName = ((item.name && (item.name[l] || item.name.cs)) || item.name || "").toLowerCase();
+            const catMatch = state.category === "All" || item.category === state.category;
+            return catMatch && iName.includes(term);
+        });
 
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-10 opacity-60 text-sm">${t.notFound}</div>`;
-        return;
-    }
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center text-slate-400 py-10 opacity-60 text-sm">${t.notFound || 'No results'}</div>`;
+            return;
+        }
 
-    grid.innerHTML = filtered.map(item => {
-        const active = state.stack.includes(item.id);
-        return `
+        const html = filtered.map(item => {
+            const active = Array.isArray(state.stack) && state.stack.includes(item.id);
+            const nameText = (item.name && (item.name[l] || item.name.cs)) || item.name || '';
+            const descText = (item.description && (item.description[l] || item.description.cs)) || item.description || '';
+            const catLabel = cats[item.category] || item.category || '';
+
+            return `
         <div class="card-hover p-5 flex flex-col relative card-fade-in bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/10 rounded-3xl" onclick="openModal(${item.id})">
             <div class="flex justify-between items-start mb-3">
-                <div class="w-12 h-12 flex items-center justify-center rounded-2xl text-2xl icon-bg-${item.category}">${item.icon}</div>
-                <span class="cat-badge-${item.category}">${t.cats[item.category] || item.category}</span>
+                <div class="w-12 h-12 flex items-center justify-center rounded-2xl text-2xl icon-bg-${item.category}">${item.icon || ''}</div>
+                <span class="cat-badge-${item.category}">${catLabel}</span>
             </div>
-            <h3 class="font-bold text-slate-900 dark:text-white text-lg mb-1 leading-tight tracking-tight">${item.name[l]}</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 font-medium">${item.description[l]}</p>
-            <div class="mt-auto pt-4 border-t border-slate-50 dark:border-white/5 flex justify-between items-center" onclick="event.stopPropagation()">
-                <button onclick="openModal(${item.id})" class="text-xs font-black text-slate-400 hover:text-brand-500 uppercase tracking-widest transition">${t.detail}</button>
-                <button onclick="toggleItem(${item.id})" class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm transition-all font-bold ${active ? 'bg-green-500 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-400 hover:text-brand-500'}">
+            <h3 class="font-bold text-slate-900 dark:text-white text-lg mb-1 leading-tight tracking-tight">${escapeHtml(nameText)}</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 font-medium">${escapeHtml(descText)}</p>
+            <div class="mt-auto pt-4 border-t border-slate-50 dark:border-white/5 flex justify-between items-center">
+                <button onclick="event.stopPropagation(); openModal(${item.id})" class="text-xs font-black text-slate-400 hover:text-brand-500 uppercase tracking-widest transition">${t.detail || 'Details'}</button>
+                <button onclick="event.stopPropagation(); toggleItem(${item.id})" class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm transition-all font-bold ${active ? 'bg-green-500 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-400 hover:text-brand-500'}">
                     ${active ? '✓' : '+'}
                 </button>
             </div>
         </div>`;
-    }).join('');
+        }).join('');
+
+        grid.innerHTML = html;
+    } catch (err) {
+        console.error('render error:', err);
+        grid.innerHTML = `<div class="col-span-full text-center text-red-400 py-10">Rendering error — check console.</div>`;
+    }
+}
+
+/* Small helper to avoid inserting raw HTML from data */
+function escapeHtml(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
 }
 
 // --- 5. MODAL LOGIC (INCLUDING STUDIES ACCORDION) ---
@@ -272,26 +351,27 @@ function analyze() {
 
     items.forEach(item => {
         const name = item.name[l];
-        const timing = (item.timing.en || "").toLowerCase();
+        const timing = (item.timing.en || item.timing.cs || "").toLowerCase();
         const dose = getDosage(item, l);
 
         const badge = `
-        <div class="group bg-white dark:bg-white/5 border border-slate-100 dark:border-white/5 px-3 py-2 rounded-2xl text-xs font-bold dark:text-white shadow-sm flex justify-between items-center gap-2 transition-all hover:border-red-500/20">
-            <span class="truncate">${name}</span>
+<div
+    class="group bg-white dark:bg-white/5 border border-slate-100 dark:border-white/5 px-3 py-2 rounded-2xl text-xs font-bold dark:text-white shadow-sm flex justify-between items-center gap-2 transition-all hover:border-brand-500 cursor-pointer"
+    onclick="openModal(${item.id})"
+>
+    <span class="truncate">${name}</span>
 
-            <div class="flex items-center gap-2">
-                <span class="text-brand-500 font-black">${dose}</span>
+    <div class="flex items-center gap-2">
+        <span class="text-brand-500 font-black">${dose}</span>
 
-                <button
-                    type="button"
-                    data-remove-id="${item.id}"
-                    class="ml-1 text-red-500 hover:text-red-600 transition-all text-[14px] leading-none p-1"
-                    title="${l === 'cs' ? 'Odebrat' : 'Remove'}"
-                >
-                    ✕
-                </button>
-            </div>
-        </div>`;
+        <button
+            type="button"
+            data-remove-id="${item.id}"
+            onclick="event.stopPropagation()"
+            class="ml-1 text-red-500 hover:text-red-600 transition-all text-[14px] leading-none p-1"
+        >✕</button>
+    </div>
+</div>`;
 
         if (timing.includes("morning")) slots.morning.push(badge);
         else if (timing.includes("pre-workout")) slots.pre.push(badge);
@@ -315,9 +395,17 @@ function analyze() {
 
     // Warnings Logic
     const warns = [];
-    if (items.some(i => i.contains?.includes("Zinek")) && items.some(i => i.name.cs.includes("Vápník"))) {
-        warns.push(l === 'cs' ? "Vápník blokuje vstřebávání Zinku." : "Calcium blocks Zinc absorption.");
+    if (
+        items.some(i => i.contains?.some(x => x.toLowerCase().includes("zinc"))) &&
+        items.some(i => i.contains?.some(x => x.toLowerCase().includes("calcium")))
+    ) {
+        warns.push(
+            l === 'cs'
+                ? "Vápník blokuje vstřebávání Zinku."
+                : "Calcium blocks Zinc absorption."
+        );
     }
+
 
     const wContainer = document.getElementById("warnings-container");
     const wList = document.getElementById("warnings-list");
@@ -342,32 +430,78 @@ function removeFromStack(id) {
 
 // --- 7. CORE LOGIC ---
 function toggleItem(id) {
-    if (state.stack.includes(id)) {
-        state.stack = state.stack.filter(i => i !== id);
-        showToast(uiTranslations[state.lang].toastRemoved, "warn");
+    id = Number(id);
+    if (!Array.isArray(state.stack)) state.stack = [];
+
+    const exists = state.stack.includes(id);
+
+    if (exists) {
+        state.stack = state.stack.filter(x => x !== id);
+        showToast(
+            uiTranslations?.[state.lang]?.toastRemoved || 'Removed from stack'
+        );
     } else {
         state.stack.push(id);
-        showToast(uiTranslations[state.lang].toastAdded);
+        showToast(
+            uiTranslations?.[state.lang]?.toastAdded || 'Added to stack'
+        );
     }
-    save(); render(); analyze();
+
+    syncUI();
 }
 
+// ---------- SINGLE SOURCE OF TRUTH ----------
+function syncUI() {
+    save();
+    render();
+    analyze();
+}
+
+// ---------- DOSAGE ----------
 function getDosage(item, lang) {
-    if (item.id === 2) return `${Math.round(state.weight * 0.35)}g`;
+    if (item.id === 2) return `${Math.round(state.weight * 0.35)} g`;
     if (item.id === 13) return `max 400 mg`;
-    return item.dosage;
+    return item.dosage?.[lang] || item.dosage || '';
 }
 
-function save() { localStorage.setItem('supplementGuideState', JSON.stringify(state)); }
-function clearStack() { if (confirm(state.lang === 'cs' ? "Opravdu smazat celý stack?" : "Clear entire stack?")) { state.stack = []; save(); render(); analyze(); } }
+// ---------- STORAGE ----------
+function save() {
+    const { search, category, ...persisted } = state;
+    localStorage.setItem('supplementGuideState', JSON.stringify(persisted));
+}
 
+function clearStack() {
+    const msg =
+        state.lang === 'cs'
+            ? 'Opravdu smazat celý stack?'
+            : 'Clear entire stack?';
+
+    if (!confirm(msg)) return;
+
+    state.stack = [];
+    syncUI();
+}
+
+// ---------- TOAST ----------
 function showToast(msg, type = 'success') {
     const c = document.getElementById('toast-container');
+    if (!c) return;
+
     const t = document.createElement('div');
-    t.className = `toast ${type === 'warn' ? 'border-yellow-500/50' : 'border-brand-500/50'}`;
-    t.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> ${msg}`;
+    t.className =
+        `toast flex items-center gap-2 border ` +
+        (type === 'warn'
+            ? 'border-yellow-500/50'
+            : 'border-brand-500/50');
+
+    t.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span><span>${msg}</span>`;
+
     c.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => c.removeChild(t), 300); }, 2500);
+
+    setTimeout(() => {
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 300);
+    }, 2500);
 }
 
 // --- PROFILE ACTIONS ---
@@ -473,9 +607,12 @@ function renderSavedStacks() {
 
     if (!area || !list) return;
 
+    const stacks = state.savedStacks || {};
+    const names = Object.keys(stacks);
+
     list.innerHTML = "";
 
-    const names = Object.keys(state.savedStacks || {});
+    // Empty state
     if (names.length === 0) {
         area.classList.add("hidden");
         return;
@@ -485,22 +622,134 @@ function renderSavedStacks() {
 
     names.forEach(name => {
         const row = document.createElement("div");
-        row.className = "flex items-center justify-between bg-slate-100 dark:bg-[#1C1C1E] px-3 py-2 rounded-xl text-xs";
+        row.className =
+            "flex items-center justify-between bg-slate-100 dark:bg-[#1C1C1E] px-3 py-2 rounded-xl text-xs gap-2";
 
-        row.innerHTML = `
-            <button class="flex-1 text-left font-bold truncate">${name}</button>
-            <button class="text-red-400 hover:text-red-600 ml-2">✕</button>
-        `;
+        // Load button
+        const loadBtn = document.createElement("button");
+        loadBtn.className = "flex-1 text-left font-bold truncate";
+        loadBtn.textContent = name;
+        loadBtn.onclick = (e) => {
+            e.stopPropagation();
+            loadSavedStack(name);
+        };
 
-        const loadBtn = row.children[0];
-        const deleteBtn = row.children[1];
+        // Delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "text-red-400 hover:text-red-600 ml-2 font-bold";
+        deleteBtn.textContent = "✕";
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (confirm(`Delete saved stack "${name}"?`)) {
+                deleteSavedStack(name);
+            }
+        };
 
-        loadBtn.onclick = () => loadSavedStack(name);
-        deleteBtn.onclick = () => deleteSavedStack(name);
-
+        row.appendChild(loadBtn);
+        row.appendChild(deleteBtn);
         list.appendChild(row);
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const BREAKPOINT = 1024;
+
+    const fab = document.getElementById("mobile-stack-fab");
+    const sidebar = document.getElementById("stack-sidebar");
+    const stackCount = document.getElementById("stack-count");
+    const badge = document.getElementById("fab-count");
+
+    if (!fab || !sidebar) return;
+
+    /* ===============================
+       CREATE OVERLAY (only once)
+    =============================== */
+
+    const overlay = document.createElement("div");
+    overlay.id = "mobile-stack-overlay";
+    overlay.innerHTML = `
+        <div class="stack-inner relative">
+            <button class="stack-close-btn" aria-label="Zavřít">✕</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const inner = overlay.querySelector(".stack-inner");
+    const closeBtn = overlay.querySelector(".stack-close-btn");
+
+    /* ===============================
+       OPEN
+    =============================== */
+
+    function openStack() {
+        if (window.innerWidth >= BREAKPOINT) return;
+
+        inner.appendChild(sidebar.firstElementChild.cloneNode(true));
+        overlay.classList.add("active");
+        document.body.classList.add("stack-open");
+        fab.setAttribute("aria-expanded", "true");
+    }
+
+    /* ===============================
+       CLOSE
+    =============================== */
+
+    function closeStack() {
+        overlay.classList.remove("active");
+        document.body.classList.remove("stack-open");
+        fab.setAttribute("aria-expanded", "false");
+
+        setTimeout(() => {
+            inner.querySelectorAll(":scope > *:not(.stack-close-btn)")
+                .forEach(el => el.remove());
+        }, 200);
+    }
+
+    /* ===============================
+       EVENTS
+    =============================== */
+
+    fab.addEventListener("click", () =>
+        overlay.classList.contains("active") ? closeStack() : openStack()
+    );
+
+    closeBtn.addEventListener("click", closeStack);
+
+    overlay.addEventListener("click", e => {
+        if (e.target === overlay) closeStack();
+    });
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") closeStack();
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth >= BREAKPOINT) closeStack();
+    });
+
+    /* ===============================
+       AUTO BADGE SYNC
+    =============================== */
+
+    if (stackCount && badge) {
+        const updateBadge = () => {
+            const count = parseInt(stackCount.textContent) || 0;
+
+            badge.textContent = count > 99 ? "99+" : count;
+            badge.style.display = count > 0 ? "flex" : "none";
+
+            badge.classList.add("badge-pop");
+            setTimeout(() => badge.classList.remove("badge-pop"), 200);
+        };
+
+        updateBadge();
+
+        new MutationObserver(updateBadge)
+            .observe(stackCount, { childList: true, subtree: true });
+    }
+
+});
 
 // ---------- LOAD ----------
 
@@ -583,15 +832,18 @@ function buildExportHeader() {
 }
 
 function groupStackByTiming() {
+    const stack = Array.isArray(state.stack) ? state.stack.map(Number) : [];
     const groups = { morning: [], pre: [], post: [], evening: [] };
 
-    state.stack.forEach(id => {
-        const s = supplements.find(x => x.id === id);
+    stack.forEach(id => {
+        const s = supplements.find(x => Number(x.id) === Number(id));
         if (!s) return;
-        const timing = (s.timing?.en || "").toLowerCase();
-        if (timing.includes("morning")) groups.morning.push(s);
-        else if (timing.includes("pre")) groups.pre.push(s);
-        else if (timing.includes("post")) groups.post.push(s);
+
+        const t = (s.timing?.en || s.timing?.cs || '').toLowerCase();
+
+        if (t.includes('morning')) groups.morning.push(s);
+        else if (t.includes('pre')) groups.pre.push(s);
+        else if (t.includes('post')) groups.post.push(s);
         else groups.evening.push(s);
     });
 
@@ -739,6 +991,8 @@ function doPDFExport() {
 
     html2pdf().set(opt).from(wrapper).save();
 }
+
+
 
 // ===============================
 

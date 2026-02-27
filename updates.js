@@ -4,6 +4,97 @@
 
 const changeLogData = [
     {
+        version: "2.3",
+        date: "2026-02-27",
+        title: "Mobile Stack Overlay & Smart Badge System",
+        badge: "PATCH",
+        description: "A focused mobile experience update introducing a full-screen stack overlay, automatic badge synchronization, and simplified interaction logic. This release improves performance, reduces code complexity, and delivers a cleaner mobile UX without altering the core desktop layout.",
+        changes: [
+            {
+                type: "new",
+                icon: "📱",
+                title: "New Mobile Functionality",
+                items: [
+                    "<b>Full-Screen Mobile Stack Overlay:</b> \"My Stack\" is now hidden on mobile and opens as a dedicated full-screen experience via floating action button (FAB).",
+                    "<b>Automatic Badge Counter:</b> The FAB now live-syncs with stack changes using MutationObserver — no manual update calls required.",
+                    "<b>Smart Desktop Protection:</b> Overlay automatically disables on desktop breakpoints (≥1024px) to prevent layout conflicts."
+                ]
+            },
+            {
+                type: "design",
+                icon: "✨",
+                title: "UX & Interaction Improvements",
+                items: [
+                    "Added smooth open/close animation with scale + opacity transitions.",
+                    "Scroll locking prevents background movement while overlay is active.",
+                    "Improved mobile accessibility with ESC key close and backdrop click close.",
+                    "Badge now auto-hides at 0 and supports smart limit display (99+)."
+                ]
+            },
+            {
+                type: "refactor",
+                icon: "⚙️",
+                title: "Code Simplification & Stability",
+                items: [
+                    "<b>Reduced mobile stack controller complexity by over 50%.</b>",
+                    "Removed unnecessary public API exposure to prevent misuse.",
+                    "Eliminated redundant state flags and simplified toggle logic.",
+                    "Safer DOM cleanup to prevent duplicate renders.",
+                    "Improved resize handling to auto-close overlay on desktop transition."
+                ]
+            }
+        ]
+    },
+    {
+        version: "2.2",
+        date: "2026-02-05",
+        title: "Stability, Stack Interaction & Rendering Fixes",
+        badge: "PATCH",
+        description: "A stability-focused update that fixes multiple rendering and state bugs, improves stack interaction, and restores consistent supplement loading. This release hardens core logic and improves usability without changing the visual design direction.",
+        changes: [
+            {
+                type: "new",
+                icon: "🚀",
+                title: "New Functionality",
+                items: [
+                    "<b>Clickable Supplements in My Stack:</b> Each supplement in the \"My Stack\" timeline can now be clicked to open its full detail modal, including description, dosage, and timing.",
+                    "<b>Consistent Active State Rendering:</b> Supplement cards now correctly reflect stack state (+ / ✓) based purely on application state.",
+                    "<b>Improved Stack Interaction Flow:</b> Add/remove actions are immediately reflected across grid, timeline, and analysis without desync."
+                ]
+            },
+            {
+                type: "design",
+                icon: "🎨",
+                title: "UX & Interaction Improvements",
+                items: [
+                    "Fixed click behavior inside supplement cards so action buttons no longer trigger unintended modal opens.",
+                    "Improved visual consistency of active (+ / ✓) buttons across light and dark modes.",
+                    "Cleaner empty-state messaging when no supplements match active filters.",
+                    "More predictable behavior when switching language or category while a stack is active."
+                ]
+            },
+            {
+                type: "fix",
+                icon: "🛠",
+                title: "Bug Fixes & Stability Improvements",
+                items: [
+                    "<b>Fixed supplements not fully loading due to persisted search filters.</b>",
+                    "Fixed incorrect rendering caused by stale UI state restored from localStorage.",
+                    "Fixed stack desynchronization caused by missing or invalid render calls.",
+                    "Fixed broken add/remove behavior caused by calling non-existent functions.",
+                    "Fixed supplement cards disappearing due to render loop interruption.",
+                    "Fixed ID comparison issues by normalizing all supplement IDs to numbers.",
+                    "Fixed saved stacks not updating UI correctly after load or delete.",
+                    "Fixed event propagation issues inside dynamically rendered elements.",
+                    "Fixed edge cases where state.stack was not an array, causing runtime errors.",
+                    "Improved defensive rendering to prevent blank screens on unexpected data."
+                ]
+            }
+        ]
+    },
+
+
+    {
         version: "2.1",
         date: "2026-01-17",
         title: "Stability & Pro Export Update",

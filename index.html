@@ -137,7 +137,7 @@
     <main
         class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
 
-        <aside class="lg:col-span-4 order-1 lg:order-1 self-start">
+        <aside id="stack-sidebar" class="hidden lg:block lg:col-span-4 order-1 lg:order-1 self-start">
             <div
                 class="bg-white/70 dark:bg-[#0A0A0A]/80 backdrop-blur-2xl rounded-[2.5rem] shadow-glass border border-slate-200/50 dark:border-white/5 p-6 sticky top-[5rem] transition-all flex flex-col max-h-[calc(100vh-120px)] z-30">
 
@@ -318,17 +318,27 @@
             </div>
         </aside>
 
-        <button onclick="toggleMobileStack()"
-            class="fixed bottom-20 right-6 lg:hidden w-12 h-12 bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center z-[90] active:scale-90 transition-transform duration-200 border-2 border-white/20"
-            aria-label="Otevřít můj stack">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- MOBILE STACK FAB BUTTON -->
+        <button id="mobile-stack-fab" type="button"
+            class="fixed bottom-20 right-6 lg:hidden w-14 h-14 bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center z-[200] active:scale-90 transition-all duration-200 border-2 border-white/20 backdrop-blur-md"
+            aria-label="Otevřít můj stack" aria-controls="stack-sidebar" aria-expanded="false">
+
+            <!-- ICON -->
+            <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                 </path>
             </svg>
-            <span id="fab-count"
-                class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-black shadow-sm">0</span>
+
+            <!-- COUNT BADGE -->
+            <span id="fab-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold 
+         min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center 
+         border-2 border-white dark:border-black shadow-md">
+                0
+            </span>
+
         </button>
+        <!-- END MOBILE STACK FAB -->
 
         <section class="lg:col-span-8 order-2 lg:order-2">
             <div
