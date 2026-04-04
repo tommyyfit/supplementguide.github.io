@@ -1,5 +1,5 @@
 // =================================================================
-// --- SUPPLEMENTS DATABASE (FULL 50 ITEMS - BILINGUAL - RESEARCHED) ---
+// --- SUPPLEMENTS DATABASE (56 ITEMS - V3 - BILINGUAL - RESEARCHED) ---
 // =================================================================
 
 const supplements = [
@@ -809,5 +809,103 @@ const supplements = [
         benefits: { cs: ["Spánek", "Regenerace"], en: ["Sleep", "Recovery"] }, 
         dosage: "Dle produktu", 
         timing: { cs: "Večer", en: "Evening" }
+    },
+
+    // --- V3 NEW SUPPLEMENTS ---
+    {
+        id: 51,
+        category: "Zdraví",
+        confidence: "high",
+        link: "https://examine.com/supplements/astaxanthin/",
+        icon: "🦀",
+        contains: ["Astaxanthin"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/21197727/", "https://pubmed.ncbi.nlm.nih.gov/20637798/"],
+        synergy: ["Omega-3"],
+        conflict: [],
+        name: { cs: "Astaxanthin", en: "Astaxanthin" },
+        description: { cs: "Nejsilnější přírodní antioxidant. 6000× silnější než Vitamín C.", en: "Strongest natural antioxidant. 6000× more potent than Vitamin C." },
+        benefits: { cs: ["Ochrana buněk", "Oční zdraví", "Pokožka"], en: ["Cell protection", "Eye health", "Skin"] },
+        dosage: "4-12mg",
+        timing: { cs: "S jídlem obsahujícím tuk", en: "With fatty meal" }
+    },
+    {
+        id: 52,
+        category: "Zdraví",
+        confidence: "medium",
+        link: "https://examine.com/supplements/berberine/",
+        icon: "🌿",
+        contains: ["Berberin"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/22116706/", "https://pubmed.ncbi.nlm.nih.gov/19800084/"],
+        synergy: [],
+        conflict: ["Léky na cukrovku"],
+        name: { cs: "Berberin", en: "Berberine" },
+        description: { cs: "Přírodní regulátor krevního cukru. Srovnatelný s Metforminem.", en: "Natural blood sugar regulator. Comparable to Metformin." },
+        benefits: { cs: ["Glykémie", "Metabolismus", "Srdce"], en: ["Blood sugar", "Metabolism", "Heart"] },
+        dosage: "500mg",
+        timing: { cs: "Před jídlem", en: "Before meals" }
+    },
+    {
+        id: 53,
+        category: "Zdraví",
+        confidence: "medium",
+        link: "https://examine.com/supplements/nicotinamide-mononucleotide/",
+        icon: "🔋",
+        contains: ["NMN"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/26701494/", "https://pubmed.ncbi.nlm.nih.gov/24703712/"],
+        synergy: ["Resveratrol"],
+        conflict: [],
+        name: { cs: "NMN (Nikotinamid Mononukleotid)", en: "NMN (Nicotinamide Mononucleotide)" },
+        description: { cs: "Prekurzor NAD+. Podporuje buněčnou energii a dlouhověkost.", en: "NAD+ precursor. Supports cellular energy and longevity." },
+        benefits: { cs: ["Buněčná energie", "Dlouhověkost", "DNA oprava"], en: ["Cellular energy", "Longevity", "DNA repair"] },
+        dosage: "250-500mg",
+        timing: { cs: "Ráno", en: "Morning" }
+    },
+    {
+        id: 54,
+        category: "Síla",
+        confidence: "medium",
+        link: "https://examine.com/supplements/fadogia-agrestis/",
+        icon: "🌾",
+        contains: ["Fadogia"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/16635908/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5278660/"],
+        synergy: ["Tongkat Ali"],
+        conflict: [],
+        name: { cs: "Fadogia Agrestis", en: "Fadogia Agrestis" },
+        description: { cs: "Africká bylina stimulující LH a hladiny testosteronu.", en: "African herb stimulating LH and testosterone levels." },
+        benefits: { cs: ["Testosteron", "Libido", "Síla"], en: ["Testosterone", "Libido", "Strength"] },
+        dosage: "400-600mg",
+        timing: { cs: "Ráno (cyklovat 8–12 týdnů)", en: "Morning (cycle 8–12 weeks)" }
+    },
+    {
+        id: 55,
+        category: "Zdraví",
+        confidence: "medium",
+        link: "https://examine.com/supplements/shilajit/",
+        icon: "🪨",
+        contains: ["Fulvic acid", "Minerály"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/19755698/", "https://pubmed.ncbi.nlm.nih.gov/25771869/"],
+        synergy: ["CoQ10"],
+        conflict: [],
+        name: { cs: "Shilajit", en: "Shilajit" },
+        description: { cs: "Pryskyřice bohatá na fulvic acid a 85 minerálů.", en: "Resin rich in fulvic acid and 85 minerals." },
+        benefits: { cs: ["Energie", "Testosteron", "Mitochondrie"], en: ["Energy", "Testosterone", "Mitochondria"] },
+        dosage: "300-500mg",
+        timing: { cs: "Ráno", en: "Morning" }
+    },
+    {
+        id: 56,
+        category: "Síla",
+        confidence: "medium",
+        link: "https://examine.com/supplements/turkesterone/",
+        icon: "🏆",
+        contains: ["Turkesteron"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/10997377/", "https://pubmed.ncbi.nlm.nih.gov/6538498/"],
+        synergy: ["Kreatin"],
+        conflict: [],
+        name: { cs: "Turkesteron", en: "Turkesterone" },
+        description: { cs: "Rostlinný ecdysteroid podporující proteosyntézu.", en: "Plant-based ecdysteroid supporting protein synthesis." },
+        benefits: { cs: ["Svalová hmota", "Regenerace", "Síla"], en: ["Muscle mass", "Recovery", "Strength"] },
+        dosage: "500mg",
+        timing: { cs: "S jídlem", en: "With food" }
     }
 ];

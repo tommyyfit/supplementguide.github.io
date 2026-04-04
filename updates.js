@@ -4,6 +4,119 @@
 
 const changeLogData = [
     {
+        version: "3.5",
+        date: "2026-04-04",
+        title: "Zero Hardcoded Strings, 5-Slot Schedule, Fixed Export & Full Bug Sweep",
+        badge: "MAJOR",
+        description: "V3.5 is a comprehensive quality release that eliminates all hardcoded strings in both Czech and English, completely rewrites the export engine (PDF now always white-background with full supplement detail), adds an Intra-workout schedule slot, fixes synergy detection logic, hardens conflict rules, and resolves every translation gap introduced in V3.",
+        changes: [
+            {
+                type: "fix",
+                icon: "🛠",
+                title: "Critical Bug Fixes",
+                items: [
+                    "<b>Export PDF:</b> Was rendering with dark-mode colors and only name+dosage. Now always white-background, includes dosage, timing, benefits, synergies, and conflicts per supplement — fully bilingual.",
+                    "<b>Export TXT:</b> Now includes dosage, timing, benefits, synergies, and conflicts per supplement — structured in clear sections with Unicode borders.",
+                    "<b>Intra-workout items lost:</b> EAA, Elektrolyty and all 'during workout' items were falling into the Evening bucket. Now correctly routed to a dedicated Intra-workout slot.",
+                    "<b>Stack Score synergy detection fixed:</b> Was using name string matching which almost never matched. Now correctly checks the `contains` array of each supplement against synergy lists.",
+                    "<b>TXT export toast not translated:</b> Was always showing English regardless of language. Fixed.",
+                    "<b>compareList not cleaned on init:</b> Stale IDs could remain if supplements database changes. Now cleaned on every init.",
+                    "<b>Remove button event binding race condition:</b> Replaced inline onclick with `addEventListener` + `once:true` to prevent double-firing on fast re-renders.",
+                    "<b>loadSavedStack not updating weight/gender UI inputs:</b> Weight input and gender select now correctly update on stack load.",
+                    "<b>modal opacity-0 applied before display:</b> Now uses requestAnimationFrame to ensure the transition runs correctly."
+                ]
+            },
+            {
+                type: "new",
+                icon: "✨",
+                title: "Translation & Localization (Zero Hardcoded Strings)",
+                items: [
+                    "<b>Gender select options</b> now switch between 'Muž/Žena' and 'Man/Woman' on language toggle.",
+                    "<b>Preset button labels</b> now switch correctly between Czech and English.",
+                    "<b>'Harmonogram' heading</b> in sidebar now translates to 'Schedule' in EN.",
+                    "<b>'Uživatel / Aktivní'</b> profile labels now translate.",
+                    "<b>'Kritické upozornění'</b> warnings title now translates to 'Critical Warnings'.",
+                    "<b>'Ověřeno vědeckými daty'</b> modal footer note now translates to 'Science-backed data'.",
+                    "<b>'Uložené profily'</b> saved stacks section title now translates.",
+                    "<b>All confirm() / prompt() dialogs</b> now use translation strings with `{name}` interpolation — no more hardcoded Czech in JS.",
+                    "New translation keys added: exportTitle, exportSubtitle, exportCancel, txtExportReady, pdfExportReady, exportMale, exportFemale, exportBenefits, exportTiming, warningTitle, harmonogram, userLabel, activeLabel, compareAddOne, compareMax, compareDosage, compareTiming, compareBenef, compareSyn, compareCon, compareEvid, modalFooterNote, savedProfilesTitle, and 12 more."
+                ]
+            },
+            {
+                type: "new",
+                icon: "📅",
+                title: "Intra-Workout Schedule Slot",
+                items: [
+                    "New 💧 Intra-workout slot in the sidebar schedule — separate from Evening.",
+                    "Supplements with timing containing 'intra', 'during', or 'během' now correctly appear here.",
+                    "Affects: EAA, Elektrolyty, and any future intra-workout supplements.",
+                    "Schedule now has 5 slots: Morning → Pre-workout → Intra-workout → Post-workout → Evening."
+                ]
+            },
+            {
+                type: "design",
+                icon: "🎨",
+                title: "Export & UX Polish",
+                items: [
+                    "PDF export redesigned with clean two-column header, section cards with colored left borders, and full supplement detail rows including icon, name, dosage, timing, benefits, synergy, and conflicts.",
+                    "TXT export uses Unicode box-drawing characters for a clean structured layout.",
+                    "Export modal buttons now have hover-to-brand-blue styling for visual feedback.",
+                    "Compare modal now has a brand-colored close button and overflow-x-auto for narrow screens.",
+                    "Stack score calculation refined: max +32 for science-backed items, +21 for synergies, −33 for conflicts."
+                ]
+            }
+        ]
+    },
+    {
+        version: "3.0",
+        date: "2026-03-31",
+        title: "Stack Score, Presets, Compare & 6 New Supplements",
+        badge: "MAJOR",
+        description: "Version 3.0 is the biggest update yet — introducing a real-time Stack Score engine, goal-based preset stacks, a full side-by-side supplement comparison tool, confidence badges on every supplement card, expanded conflict detection with 7 new interaction rules, and 6 brand-new supplements including NMN, Berberine, Astaxanthin, Shilajit, Fadogia Agrestis, and Turkesterone.",
+        changes: [
+            {
+                type: "new",
+                icon: "🚀",
+                title: "New Features",
+                items: [
+                    "<b>Stack Score (0–100):</b> A dynamic score computed from science-backed items, detected synergies, and active conflicts — displayed as an animated circular gauge in the sidebar.",
+                    "<b>Goal Preset Stacks:</b> One-click presets for Sleep, Strength, Energy, Focus, and Health — each loading a curated set of 5 optimized supplements instantly.",
+                    "<b>Supplement Comparison Tool:</b> Compare up to 3 supplements side-by-side in a rich modal — showing dosage, timing, benefits, synergies, conflicts, and evidence level.",
+                    "<b>Compare Bar:</b> A persistent bottom bar tracks your comparison selection with live-updated names. Opens the compare modal when 2+ items are selected.",
+                    "<b>6 New Supplements:</b> Astaxanthin (id:51), Berberine (id:52), NMN (id:53), Fadogia Agrestis (id:54), Shilajit (id:55), Turkesterone (id:56) — all with bilingual data and PubMed study links.",
+                    "<b>Confidence Badges in Modal:</b> Every supplement detail modal now shows a color-coded evidence badge (Science-backed / Promising / Preliminary) based on the confidence field."
+                ]
+            },
+            {
+                type: "design",
+                icon: "✨",
+                title: "UI & UX Improvements",
+                items: [
+                    "Quick Start preset row above the supplement grid — horizontally scrollable, fully responsive.",
+                    "Modal footer now has a Porovnat / Compare button inline with Add to Stack — no extra clicks needed.",
+                    "Stack Score widget animates in smoothly using SVG stroke-dasharray transitions.",
+                    "V3 badge added to the header logo and footer copyright.",
+                    "Compare bar appears at the bottom of the viewport with contextual messaging based on selection count.",
+                    "Warnings list items now render as flex rows with bullet alignment for improved readability."
+                ]
+            },
+            {
+                type: "fix",
+                icon: "🛠",
+                title: "Expanded Conflict Detection (7 New Rules)",
+                items: [
+                    "<b>Caffeine + Melatonin:</b> Evening antagonism warning.",
+                    "<b>NAC + Alcohol:</b> Toxicity amplification warning.",
+                    "<b>Iron + Calcium:</b> Absorption interference warning.",
+                    "<b>Probiotics + Antibiotics:</b> Destruction conflict warning.",
+                    "<b>Berberine + Diabetes meds:</b> Clinical amplification warning.",
+                    "<b>Tryptophan + SSRIs:</b> Serotonin syndrome risk warning.",
+                    "<b>Multiple caffeine sources:</b> Auto-detects stacked caffeine items and warns about overdose risk."
+                ]
+            }
+        ]
+    },
+    {
         version: "2.3",
         date: "2026-02-27",
         title: "Mobile Stack Overlay & Smart Badge System",
