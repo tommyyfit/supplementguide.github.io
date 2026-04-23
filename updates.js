@@ -4,6 +4,101 @@
 
 const changeLogData = [
     {
+        version: "4.2.3",
+        date: "2026-04-23",
+        title: "V4.2.3 — Tribulus Terrestris Catalog Update",
+        badge: "PATCH",
+        description: "A focused catalog update that adds Tribulus Terrestris to the supplement database and brings the update log in line with the V4.2.3 header.",
+        changes: [
+            {
+                type: "new",
+                icon: "🌿",
+                title: "New Supplement",
+                items: [
+                    "<b>Added Tribulus Terrestris:</b> A libido-focused herbal entry with bilingual descriptions, dosage, timing, synergies, conflicts, and study links.",
+                    "The entry is intentionally worded conservatively: potential libido support, but no strong testosterone-boosting claim for healthy users."
+                ]
+            },
+            {
+                type: "design",
+                icon: "✨",
+                title: "Version Polish",
+                items: [
+                    "Updated the What's New feed so V4.2.3 appears as the latest release.",
+                    "Supplement database count now reflects 57 total items."
+                ]
+            }
+        ]
+    },
+    {
+        version: "4.2.1",
+        date: "2026-04-22",
+        title: "V4.2.1 — Modular File-Open Fix & Stability Cleanup",
+        badge: "PATCH",
+        description: "This patch fixes the broken single-script build, splits the logic into maintainable classic scripts, restores reliable file-open support from index.html, and cleans up modal, compare, export, and stack behavior.",
+        changes: [
+            {
+                type: "fix",
+                icon: "🛠",
+                title: "Stability & Runtime Fixes",
+                items: [
+                    "Fixed the missing fit-note helper that could break supplement detail rendering.",
+                    "Split the large script into multiple classic files without import/export, so it works with direct file opening and GitHub Pages.",
+                    "Improved shared state handling, saved stacks, compare state, and safer URL import parsing."
+                ]
+            },
+            {
+                type: "refactor",
+                icon: "🧩",
+                title: "Modular Architecture",
+                items: [
+                    "Core state, render logic, analysis, dialogs, export, compare, and mobile overlay are now separated into dedicated files.",
+                    "Global actions are still exposed for the existing HTML buttons, but the internals are now easier to edit and debug.",
+                    "The app keeps the preserved glass/iOS identity while becoming much easier to maintain."
+                ]
+            }
+        ]
+    },
+    {
+        version: "4.2",
+        date: "2026-04-22",
+        title: "V4.2 — Stable File-Open Build & Cleaner UI",
+        badge: "MAJOR",
+        description: "V4.2 keeps the preserved glass/iOS identity, removes the broken module approach, works again when opened directly from index.html, tones down noisy recommendation labels, and cleans up stack insights for a more polished look.",
+        changes: [
+            {
+                type: "fix",
+                icon: "🛠",
+                title: "Stability & File Open Support",
+                items: [
+                    "Removed the module-based dependency chain that caused the app to fail when opened directly via <b>index.html</b>.",
+                    "State loading now migrates from older versions more safely without breaking the new build.",
+                    "Share/import URL cleanup is now safer for <b>file://</b> usage and avoids problematic history replacement."
+                ]
+            },
+            {
+                type: "design",
+                icon: "✨",
+                title: "Cleaner Catalog & Detail View",
+                items: [
+                    "Supplement cards now use a cleaner, less noisy layout with fewer intrusive labels.",
+                    "The detail modal adds a small contextual fit note to explain why a supplement makes sense or may overlap.",
+                    "Stack insights were rewritten to sound more natural and less generic, especially in Czech."
+                ]
+            },
+            {
+                type: "new",
+                icon: "🧠",
+                title: "Smarter Guidance",
+                items: [
+                    "Recommendation scoring now weighs stronger fundamentals, synergy, conflicts, and likely overlap more cleanly.",
+                    "Overlap detection now helps reduce duplicate products doing the same job.",
+                    "PDF export now fails gracefully when the library is unavailable instead of crashing the flow."
+                ]
+            }
+        ]
+    },
+    {
         version: "3.5",
         date: "2026-04-04",
         title: "Zero Hardcoded Strings, 5-Slot Schedule, Fixed Export & Full Bug Sweep",
@@ -427,3 +522,5 @@ function renderUpdatesContent() {
         </div>
     `).join('<div class="w-full h-px bg-slate-200 dark:bg-white/10 my-6"></div>');
 }
+
+window.changeLogData = changeLogData;

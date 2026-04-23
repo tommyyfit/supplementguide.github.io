@@ -1,148 +1,197 @@
 <!DOCTYPE html>
 <html lang="cs" class="scroll-smooth">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no" />
-    <title>Supplement Guide V3.5 | Váš osobní biohacking stack</title>
-    <meta name="description" content="Sestavte si ideální suplementační stack. Interaktivní průvodce doplňky stravy." />
+    <title>Supplement Guide V4.2.3 | Your personal biohacking stack</title>
+    <meta name="description" content="Build a smarter supplement stack with polished guidance, comparison, exports and local-first planning." />
     <meta name="author" content="tommyyfit" />
     <meta name="theme-color" content="#007AFF" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:title" content="Supplement Guide V4.2.3" />
+    <meta property="og:description" content="Your personal biohacking stack with planning, exports and local-first guidance." />
+    <meta property="og:type" content="website" />
 
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23007AFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M13 10V3L4 14h7v7l9-11h-7z'/></svg>" />
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23007AFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M13 10V3L4 14h7v7l9-11h-7z'/></svg>"
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
 
+    <link rel="stylesheet" href="tailwind.css" />
     <link rel="stylesheet" href="style.css" />
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: { sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"] },
-                    colors: {
-                        brand: {
-                            50:"#eff6ff",100:"#dbeafe",200:"#bfdbfe",300:"#93c5fd",
-                            400:"#60a5fa",500:"#3b82f6",600:"#2563eb",700:"#1d4ed8",
-                            800:"#1e40af",900:"#1e3a8a"
-                        }
-                    },
-                    boxShadow: { glass: '0 8px 32px 0 rgba(31,38,135,0.07)' },
-                    screens: { xs: '475px' }
-                }
-            }
-        };
+        (function () {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            document.documentElement.classList.toggle('dark', isDark);
+            window.__SG_DARK__ = isDark;
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.classList.toggle('dark', isDark);
+            }, { once: true });
+        })();
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body class="antialiased min-h-screen flex flex-col bg-[#F2F2F7] dark:bg-black text-slate-900 dark:text-white transition-colors duration-300 selection:bg-brand-500 selection:text-white pb-20 lg:pb-0">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[999] focus:bg-brand-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-xl">
+        Přeskočit na obsah
+    </a>
 
-    <div id="toast-container"></div>
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- V3: Compare Bar -->
-    <div id="compare-bar" class="hidden fixed bottom-0 left-0 right-0 z-[150] bg-brand-600 text-white py-3 shadow-2xl border-t border-brand-500/50"></div>
+    <!-- Compare Bar -->
+    <div
+        id="compare-bar"
+        class="hidden fixed bottom-0 left-0 right-0 z-[150] bg-brand-600 text-white py-3 shadow-2xl border-t border-brand-500/50"
+        role="region"
+        aria-label="Porovnání doplňků"
+    ></div>
 
-    <!-- ═══════════════════════════════════════════════════ HEADER -->
+    <!-- HEADER -->
     <header class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 sticky top-0 z-[100] transition-colors duration-300 glass-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-
-            <div class="flex items-center gap-3 group cursor-pointer" onclick="window.scrollTo(0,0)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <button
+                type="button"
+                class="flex items-center gap-3 group cursor-pointer text-left"
+                onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+                aria-label="Přejít nahoru"
+            >
                 <div class="bg-brand-600 text-white p-2 rounded-xl shadow-lg shadow-brand-500/30 transition-transform group-hover:scale-105">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">
-                    Supplement<span class="text-brand-600">Guide</span><span class="ml-1.5 text-[10px] font-extrabold bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-1.5 py-0.5 rounded-md border border-brand-200 dark:border-brand-800 align-middle">V3.5</span>
-                </h1>
-            </div>
+
+                <div class="hidden sm:block leading-tight">
+                    <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Supplement<span class="text-brand-600">Guide</span>
+                        <span class="ml-1.5 text-[10px] font-extrabold bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 px-1.5 py-0.5 rounded-md border border-brand-200 dark:border-brand-800 align-middle">
+                            V4.2.3
+                        </span>
+                    </h1>
+                    <p class="text-[10px] font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase">
+                        Personal stack planner
+                    </p>
+                </div>
+            </button>
 
             <div class="flex items-center gap-2 sm:gap-3">
-
                 <!-- Gender -->
                 <div class="relative hidden xs:block">
-                    <select id="user-gender" aria-label="Vyberte pohlaví"
-                        class="appearance-none bg-slate-100 dark:bg-[#1C1C1E] border-0 text-slate-900 dark:text-white text-xs font-bold rounded-lg focus:ring-2 focus:ring-brand-500 block px-3 py-2 pr-8 cursor-pointer hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition uppercase tracking-wide">
-                        <option value="male">Muž 👨</option>
-                        <option value="female">Žena 👩</option>
+                    <select
+                        id="user-gender"
+                        aria-label="Vyberte pohlaví"
+                        class="appearance-none bg-slate-100 dark:bg-[#1C1C1E] border-0 text-slate-900 dark:text-white text-xs font-bold rounded-xl focus:ring-2 focus:ring-brand-500 block px-3 py-2 pr-8 cursor-pointer hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition uppercase tracking-wide"
+                    >
+                        <option value="male">👨 Muž</option>
+                        <option value="female">👩 Žena</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
                 </div>
 
                 <!-- Weight -->
-                <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#1C1C1E] rounded-lg px-3 py-2 transition hover:bg-slate-200 dark:hover:bg-[#2C2C2E] focus-within:ring-2 focus-within:ring-brand-500">
-                    <input type="number" id="user-weight" value="80" aria-label="Váha v kg"
-                        class="w-8 sm:w-10 bg-transparent text-xs font-bold text-slate-900 dark:text-white text-center focus:outline-none p-0 border-none appearance-none" placeholder="80">
+                <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#1C1C1E] rounded-xl px-3 py-2 transition hover:bg-slate-200 dark:hover:bg-[#2C2C2E] focus-within:ring-2 focus-within:ring-brand-500">
+                    <input
+                        type="number"
+                        id="user-weight"
+                        value="80"
+                        aria-label="Váha v kilogramech"
+                        class="w-8 sm:w-10 bg-transparent text-xs font-bold text-slate-900 dark:text-white text-center focus:outline-none p-0 border-none appearance-none"
+                        placeholder="80"
+                    />
                     <span class="text-[10px] text-slate-500 font-bold uppercase">kg</span>
                 </div>
 
-                <div class="h-6 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
+                <div class="h-6 w-px bg-slate-200 dark:bg-white/10 mx-1 hidden sm:block"></div>
 
                 <!-- Language -->
-                <button id="lang-toggle"
+                <button
+                    id="lang-toggle"
+                    type="button"
                     class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E] dark:text-white active:scale-95 font-bold text-[10px] tracking-wide border border-transparent dark:border-white/5"
-                    title="Switch Language">CZ</button>
+                    title="Přepnout jazyk"
+                    aria-label="Přepnout jazyk"
+                >
+                    CZ
+                </button>
 
                 <!-- Theme -->
-                <button id="theme-toggle"
+                <button
+                    id="theme-toggle"
+                    type="button"
                     class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E] dark:text-yellow-400 active:scale-95 border border-transparent dark:border-white/5"
-                    aria-label="Přepnout tmavý režim">
-                    <svg id="theme-icon-sun" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    aria-label="Přepnout tmavý režim"
+                    title="Přepnout motiv"
+                >
+                    <svg id="theme-icon-sun" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <svg id="theme-icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    <svg id="theme-icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
                 </button>
 
                 <!-- What's New -->
-                <button id="updates-toggle"
+                <button
+                    id="updates-toggle"
+                    type="button"
                     class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E] dark:text-yellow-400 active:scale-95 border border-transparent dark:border-white/5 relative"
-                    title="Co je nového / What's New">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    title="Co je nového"
+                    aria-label="Zobrazit novinky"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-[#0A0A0A]"></span>
+                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-[#0A0A0A]" aria-hidden="true"></span>
                 </button>
-
             </div>
         </div>
     </header>
 
-    <!-- ═══════════════════════════════════════════════════ MAIN -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
-
-        <!-- ═══════════════════════════════════════════ SIDEBAR -->
-        <aside id="stack-sidebar" class="hidden lg:block lg:col-span-4 order-1 lg:order-1 self-start">
-            <div class="bg-white/70 dark:bg-[#0A0A0A]/80 backdrop-blur-2xl rounded-[2.5rem] shadow-glass border border-slate-200/50 dark:border-white/5 p-6 sticky top-[5rem] transition-all flex flex-col max-h-[calc(100vh-120px)] z-30">
-
+    <!-- MAIN -->
+    <main
+        id="main-content"
+        class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative"
+    >
+        <!-- SIDEBAR -->
+        <aside id="stack-sidebar" class="hidden lg:block lg:col-span-4 order-1 self-start">
+            <div class="bg-white/70 dark:bg-[#0A0A0A]/80 backdrop-blur-2xl rounded-[2.5rem] shadow-glass border border-slate-200/50 dark:border-white/5 p-5 xl:p-6 sticky top-[5rem] transition-all flex flex-col max-h-[calc(100vh-120px)] z-30">
                 <!-- Header row -->
                 <div class="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-white/5 pb-5 flex-none">
                     <h2 class="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 tracking-tight">
                         <div class="bg-brand-500/10 p-2 rounded-xl">
-                            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                         </div>
                         <span id="ui-stack-title">Můj Stack</span>
                     </h2>
+
                     <div class="flex items-center gap-3">
                         <span id="stack-count" class="bg-brand-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-brand-500/30">0</span>
-                        <button onclick="clearStack()"
-                            class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all" title="Vymazat vše">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        <button
+                            type="button"
+                            onclick="clearStack()"
+                            class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all"
+                            title="Vymazat vše"
+                            aria-label="Vymazat celý stack"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
                     </div>
@@ -150,7 +199,6 @@
 
                 <!-- Scrollable content -->
                 <div class="overflow-y-auto pr-2 custom-scrollbar flex-grow">
-
                     <!-- Empty state -->
                     <div id="stack-empty" class="text-center py-16 group">
                         <div class="relative w-20 h-20 mx-auto mb-4">
@@ -165,9 +213,8 @@
 
                     <!-- Analysis -->
                     <div id="stack-analysis" class="space-y-5 hidden">
-
                         <!-- Profile card -->
-                        <div class="bg-slate-50/50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl">
+                        <div class="bg-slate-50/60 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl">
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex justify-between items-center mb-1">
                                 <span id="ui-user-label">Uživatel</span>
                                 <span class="text-brand-500" id="ui-active-label">Aktivní</span>
@@ -175,12 +222,26 @@
                             <strong id="profile-display" class="text-sm text-slate-800 dark:text-white">Muž, 80 kg</strong>
                         </div>
 
-                        <!-- V3: Stack Score -->
-                        <div id="stack-score-widget" class="hidden bg-slate-50/50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl"></div>
+                        <!-- Stack Score -->
+                        <div id="stack-score-widget" class="hidden bg-slate-50/60 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl"></div>
+
+                        <!-- Insights -->
+                        <div id="stack-insights" class="hidden bg-slate-50/60 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl">
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                <h3 class="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>
+                                    <span id="ui-insights-title">Přehled stacku</span>
+                                </h3>
+                                <span id="insight-pill" class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
+                                    Info
+                                </span>
+                            </div>
+                            <ul id="insights-list" class="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 font-medium"></ul>
+                        </div>
 
                         <!-- Warnings -->
                         <div id="warnings-container" class="hidden p-4 bg-red-500/5 dark:bg-red-500/10 border border-red-500/20 rounded-2xl">
-                            <h3 class="text-[11px] font-black text-red-600 dark:text-red-400 uppercase tracking-tighter mb-2 flex items-center gap-2" id="ui-warning-title">
+                            <h3 id="ui-warning-title" class="text-[11px] font-black text-red-600 dark:text-red-400 uppercase tracking-tighter mb-2 flex items-center gap-2">
                                 ⚠️ Kritické upozornění
                             </h3>
                             <ul id="warnings-list" class="text-xs text-red-800/80 dark:text-red-200/80 space-y-1.5 list-none pl-1"></ul>
@@ -188,185 +249,323 @@
 
                         <!-- Schedule -->
                         <div class="space-y-5 pt-1">
-                            <h3 class="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] pl-1 flex items-center gap-2" id="ui-harmonogram">
-                                <span class="w-1 h-1 bg-brand-500 rounded-full"></span> Harmonogram
+                            <h3 id="ui-harmonogram" class="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] pl-1 flex items-center gap-2">
+                                <span class="w-1 h-1 bg-brand-500 rounded-full"></span>
+                                Harmonogram
                             </h3>
 
                             <div class="relative space-y-0 pl-2">
                                 <div class="absolute left-[19px] top-2 bottom-4 w-[2px] bg-gradient-to-b from-orange-400 via-brand-500 to-indigo-600 opacity-20 rounded-full"></div>
 
-                                <!-- Morning -->
-                                <div class="relative pl-0 pb-6 group">
+                                <div class="relative pb-6 group">
                                     <div class="flex items-start gap-4">
                                         <div class="flex-none w-10 h-10 bg-white dark:bg-[#1C1C1E] rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center shadow-md z-10 group-hover:scale-110 transition-transform duration-300">
                                             <span class="text-lg">🌅</span>
                                         </div>
                                         <div class="flex-grow pt-1">
-                                            <h4 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2" id="ui-morning">Ráno</h4>
+                                            <h4 id="ui-morning" class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2">Ráno</h4>
                                             <div id="schedule-morning" class="space-y-2 text-xs text-slate-500 dark:text-slate-400 italic">—</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Pre-workout -->
-                                <div class="relative pl-0 pb-6 group">
+                                <div class="relative pb-6 group">
                                     <div class="flex items-start gap-4">
                                         <div class="flex-none w-10 h-10 bg-white dark:bg-[#1C1C1E] rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center shadow-md z-10 group-hover:scale-110 transition-transform duration-300">
                                             <span class="text-lg">⚡</span>
                                         </div>
                                         <div class="flex-grow pt-1">
-                                            <h4 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2" id="ui-pre">Před tréninkem</h4>
+                                            <h4 id="ui-pre" class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2">Před tréninkem</h4>
                                             <div id="schedule-pre" class="space-y-2 text-xs text-slate-500 dark:text-slate-400 italic">—</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Intra-workout (NEW V3.5) -->
-                                <div class="relative pl-0 pb-6 group">
+                                <div class="relative pb-6 group">
                                     <div class="flex items-start gap-4">
                                         <div class="flex-none w-10 h-10 bg-white dark:bg-[#1C1C1E] rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center shadow-md z-10 group-hover:scale-110 transition-transform duration-300">
                                             <span class="text-lg">💧</span>
                                         </div>
                                         <div class="flex-grow pt-1">
-                                            <h4 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2" id="ui-intra">Během tréninku</h4>
+                                            <h4 id="ui-intra" class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2">Během tréninku</h4>
                                             <div id="schedule-intra" class="space-y-2 text-xs text-slate-500 dark:text-slate-400 italic">—</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Post-workout -->
-                                <div class="relative pl-0 pb-6 group">
+                                <div class="relative pb-6 group">
                                     <div class="flex items-start gap-4">
                                         <div class="flex-none w-10 h-10 bg-white dark:bg-[#1C1C1E] rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center shadow-md z-10 group-hover:scale-110 transition-transform duration-300">
                                             <span class="text-lg">💪</span>
                                         </div>
                                         <div class="flex-grow pt-1">
-                                            <h4 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2" id="ui-post">Po tréninku</h4>
+                                            <h4 id="ui-post" class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2">Po tréninku</h4>
                                             <div id="schedule-post" class="space-y-2 text-xs text-slate-500 dark:text-slate-400 italic">—</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Evening -->
-                                <div class="relative pl-0 group">
+                                <div class="relative group">
                                     <div class="flex items-start gap-4">
                                         <div class="flex-none w-10 h-10 bg-white dark:bg-[#1C1C1E] rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center shadow-md z-10 group-hover:scale-110 transition-transform duration-300">
                                             <span class="text-lg">🌙</span>
                                         </div>
                                         <div class="flex-grow pt-1">
-                                            <h4 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2" id="ui-evening">Večer</h4>
+                                            <h4 id="ui-evening" class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2">Večer</h4>
                                             <div id="schedule-evening" class="space-y-2 text-xs text-slate-500 dark:text-slate-400 italic">—</div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Action buttons -->
                 <div class="flex-none pt-5 bg-white dark:bg-transparent border-t border-slate-100 dark:border-white/5 mt-2">
-
-                    <!-- Saved stacks -->
                     <div id="saved-profiles-area" class="pb-4 hidden">
-                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3" id="ui-saved-profiles-title">Uložené profily</h3>
+                        <h3 id="ui-saved-profiles-title" class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">
+                            Uložené profily
+                        </h3>
                         <div id="saved-profiles-list" class="space-y-2 max-h-32 overflow-y-auto pr-1 custom-scrollbar"></div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="saveStackProfile()"
-                            class="flex items-center justify-center gap-2 bg-slate-100/80 dark:bg-[#1C1C1E] hover:bg-slate-200 dark:hover:bg-[#2C2C2E] text-slate-700 dark:text-slate-200 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm">
-                            <span>💾</span> <span id="btn-txt-save">Uložit</span>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <button
+                            type="button"
+                            onclick="saveStackProfile()"
+                            class="flex items-center justify-center gap-2 bg-slate-100/80 dark:bg-[#1C1C1E] hover:bg-slate-200 dark:hover:bg-[#2C2C2E] text-slate-700 dark:text-slate-200 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm"
+                        >
+                            <span>💾</span>
+                            <span id="btn-txt-save">Uložit</span>
                         </button>
-                        <button onclick="exportStackText()"
-                            class="flex items-center justify-center gap-2 bg-brand-500 text-white hover:bg-brand-600 text-[11px] font-black py-3 rounded-2xl transition-all shadow-lg shadow-brand-500/25 active:scale-95">
-                            <span>📄</span> <span id="btn-txt-export">Export</span>
+
+                        <button
+                            type="button"
+                            onclick="exportStackText()"
+                            class="flex items-center justify-center gap-2 bg-brand-500 text-white hover:bg-brand-600 text-[11px] font-black py-3 rounded-2xl transition-all shadow-lg shadow-brand-500/25 active:scale-95"
+                        >
+                            <span>📄</span>
+                            <span id="btn-txt-export">Export</span>
                         </button>
-                        <button onclick="copyStackToClipboard()"
-                            class="flex items-center justify-center gap-2 bg-indigo-50/80 dark:bg-[#1C1C1E] hover:bg-indigo-100 dark:hover:bg-[#2C2C2E] text-indigo-700 dark:text-indigo-300 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm">
-                            <span>📋</span> <span id="btn-txt-copy">Kopírovat</span>
+
+                        <button
+                            type="button"
+                            onclick="copyStackToClipboard()"
+                            class="flex items-center justify-center gap-2 bg-indigo-50/80 dark:bg-[#1C1C1E] hover:bg-indigo-100 dark:hover:bg-[#2C2C2E] text-indigo-700 dark:text-indigo-300 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm"
+                        >
+                            <span>📋</span>
+                            <span id="btn-txt-copy">Kopírovat</span>
                         </button>
-                        <button onclick="shareStack()"
-                            class="flex items-center justify-center gap-2 bg-green-50/80 dark:bg-[#1C1C1E] hover:bg-green-100 dark:hover:bg-[#2C2C2E] text-green-700 dark:text-green-300 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm">
-                            <span>🔗</span> <span id="btn-txt-share">Sdílet</span>
+
+                        <button
+                            type="button"
+                            onclick="shareStack()"
+                            class="flex items-center justify-center gap-2 bg-green-50/80 dark:bg-[#1C1C1E] hover:bg-green-100 dark:hover:bg-[#2C2C2E] text-green-700 dark:text-green-300 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm"
+                        >
+                            <span>🔗</span>
+                            <span id="btn-txt-share">Sdílet</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="exportStackJSON()"
+                            class="flex items-center justify-center gap-2 bg-slate-100/80 dark:bg-[#1C1C1E] hover:bg-slate-200 dark:hover:bg-[#2C2C2E] text-slate-700 dark:text-slate-200 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm"
+                        >
+                            <span>🧬</span>
+                            <span id="btn-txt-backup">Backup</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="triggerImportJSON()"
+                            class="flex items-center justify-center gap-2 bg-slate-100/80 dark:bg-[#1C1C1E] hover:bg-slate-200 dark:hover:bg-[#2C2C2E] text-slate-700 dark:text-slate-200 text-[11px] font-black py-3 rounded-2xl transition-all active:scale-95 border border-transparent dark:border-white/5 shadow-sm"
+                        >
+                            <span>📥</span>
+                            <span id="btn-txt-import">Import</span>
                         </button>
                     </div>
                 </div>
-
             </div>
         </aside>
 
         <!-- Mobile FAB -->
-        <button id="mobile-stack-fab" type="button"
+        <button
+            id="mobile-stack-fab"
+            type="button"
             class="fixed bottom-20 right-6 lg:hidden w-14 h-14 bg-brand-600 text-white rounded-full shadow-2xl flex items-center justify-center z-[200] active:scale-90 transition-all duration-200 border-2 border-white/20 backdrop-blur-md"
-            aria-label="Otevřít můj stack" aria-controls="stack-sidebar" aria-expanded="false">
-            <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            aria-label="Otevřít můj stack"
+            aria-controls="stack-sidebar"
+            aria-expanded="false"
+        >
+            <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            <span id="fab-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-black shadow-md">0</span>
+            <span id="fab-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center border-2 border-white dark:border-black shadow-md">
+                0
+            </span>
         </button>
 
-        <!-- ═══════════════════════════════════════ CATALOG SECTION -->
-        <section class="lg:col-span-8 order-2 lg:order-2">
+        <!-- CATALOG SECTION -->
+        <section class="lg:col-span-8 order-2 w-full">
+            <!-- Quick start -->
+            <div class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 mb-4 transition-colors duration-300 glass-header">
+                <div class="w-full max-w-[1100px] mx-auto">
+                    <p
+                        id="ui-preset-title"
+                        class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 px-1 text-center sm:text-left"
+                    >
+                        ⚡ Rychlý start
+                    </p>
 
-            <!-- V3.5: Preset quick-start row (fully translatable) -->
-            <div class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 mb-4 transition-colors duration-300 glass-header">
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2.5 px-1" id="ui-preset-title">⚡ Rychlý start</p>
-                <div class="flex gap-2 overflow-x-auto scrollbar-hide snap-x">
-                    <button id="preset-btn-sleep"    onclick="loadPreset('sleep')"    class="preset-btn snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95">💤 Spánek</button>
-                    <button id="preset-btn-strength" onclick="loadPreset('strength')" class="preset-btn snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95">💪 Síla</button>
-                    <button id="preset-btn-energy"   onclick="loadPreset('energy')"   class="preset-btn snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95">⚡ Energie</button>
-                    <button id="preset-btn-focus"    onclick="loadPreset('focus')"    class="preset-btn snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95">🧠 Focus</button>
-                    <button id="preset-btn-health"   onclick="loadPreset('health')"   class="preset-btn snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95">🛡️ Zdraví</button>
+                    <div class="flex sm:flex-wrap gap-2 overflow-x-auto sm:overflow-visible scrollbar-hide snap-x sm:snap-none sm:justify-center">
+                        <button
+                            id="preset-btn-sleep"
+                            type="button"
+                            onclick="loadPreset('sleep')"
+                            class="preset-btn shrink-0 snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95"
+                        >
+                            💤 Spánek
+                        </button>
+                        <button
+                            id="preset-btn-strength"
+                            type="button"
+                            onclick="loadPreset('strength')"
+                            class="preset-btn shrink-0 snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95"
+                        >
+                            💪 Síla
+                        </button>
+                        <button
+                            id="preset-btn-energy"
+                            type="button"
+                            onclick="loadPreset('energy')"
+                            class="preset-btn shrink-0 snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95"
+                        >
+                            ⚡ Energie
+                        </button>
+                        <button
+                            id="preset-btn-focus"
+                            type="button"
+                            onclick="loadPreset('focus')"
+                            class="preset-btn shrink-0 snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95"
+                        >
+                            🧠 Focus
+                        </button>
+                        <button
+                            id="preset-btn-health"
+                            type="button"
+                            onclick="loadPreset('health')"
+                            class="preset-btn shrink-0 snap-center whitespace-nowrap text-[11px] font-black px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-brand-500 hover:text-white transition-all active:scale-95"
+                        >
+                            🛡️ Zdraví
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Search + Filters (sticky) -->
-            <div class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between sticky top-[5rem] z-40 transition-colors duration-300 glass-header">
-                <div class="relative w-full sm:w-64">
-                    <input type="text" id="search-input" placeholder="Hledat..." aria-label="Vyhledat doplněk"
-                        class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-100 dark:bg-[#1C1C1E] border-0 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-black transition-all text-xs font-bold">
-                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </div>
-                <div class="flex gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto scrollbar-hide snap-x" id="category-filters">
-                    <button class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-black shadow-md whitespace-nowrap snap-center" data-cat="All">Vše</button>
-                    <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Síla">Síla</button>
-                    <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Zdraví">Zdraví</button>
-                    <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Spánek">Spánek</button>
-                    <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Energie">Energie</button>
-                    <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Nootropika">Nootropika</button>
+            <!-- Search + Filters -->
+            <div class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 mb-6 sticky top-[5rem] z-40 transition-colors duration-300 glass-header">
+                <div class="w-full max-w-[1100px] mx-auto flex flex-col gap-3">
+                    <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center lg:justify-center">
+                        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[640px] lg:justify-center">
+                            <div class="relative w-full sm:flex-1 sm:min-w-[260px]">
+                                <input
+                                    type="text"
+                                    id="search-input"
+                                    placeholder="🔎 Hledat doplněk..."
+                                    aria-label="Vyhledat doplněk"
+                                    class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-slate-100 dark:bg-[#1C1C1E] border-0 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-black transition-all text-xs font-bold"
+                                />
+                                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+
+                            <div class="relative w-full sm:w-[220px]">
+                                <select
+                                    id="sort-select"
+                                    aria-label="Seřadit doplňky"
+                                    class="appearance-none w-full py-2.5 pl-3 pr-9 rounded-xl bg-slate-100 dark:bg-[#1C1C1E] border-0 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 transition-all text-xs font-black tracking-wide"
+                                >
+                                    <option value="recommended">⭐ Nejvhodnější</option>
+                                    <option value="evidence">🧬 Síla důkazů</option>
+                                    <option value="az">🔠 A–Z</option>
+                                </select>
+                                <svg class="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="category-filters" class="flex sm:flex-wrap gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 scrollbar-hide snap-x sm:snap-none sm:justify-center">
+                        <button class="filter-btn active shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-black shadow-md whitespace-nowrap snap-center" data-cat="All" type="button">
+                            ✨ Vše
+                        </button>
+                        <button class="filter-btn shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Síla" type="button">
+                            💪 Síla
+                        </button>
+                        <button class="filter-btn shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Zdraví" type="button">
+                            🛡️ Zdraví
+                        </button>
+                        <button class="filter-btn shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Spánek" type="button">
+                            💤 Spánek
+                        </button>
+                        <button class="filter-btn shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Energie" type="button">
+                            ⚡ Energie
+                        </button>
+                        <button class="filter-btn shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-[#1C1C1E] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition whitespace-nowrap snap-center" data-cat="Nootropika" type="button">
+                            🧠 Nootropika
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Catalog grid -->
-            <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-12 relative z-10"></div>
-
+            <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-12 relative z-10 justify-items-center"></div>
         </section>
     </main>
 
-    <!-- ═══════════════════════════════════════════════ SUPPLEMENT MODAL -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-all duration-300">
-        <div id="modal-content" class="bg-white dark:bg-[#0A0A0A] rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto transform scale-95 transition-all duration-300 flex flex-col border border-slate-200 dark:border-white/10">
-
+    <!-- SUPPLEMENT MODAL -->
+    <div
+        id="modal-backdrop"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-all duration-300"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="m-title"
+    >
+        <div
+            id="modal-content"
+            class="bg-white dark:bg-[#0A0A0A] rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto transform scale-95 transition-all duration-300 flex flex-col border border-slate-200 dark:border-white/10"
+        >
             <!-- Modal header -->
             <div class="p-6 pb-4 relative border-b border-slate-100 dark:border-white/5 sticky top-0 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-md z-20">
-                <button onclick="closeModal()"
-                    class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1C1C1E] p-2.5 rounded-xl transition-all duration-200 active:scale-90">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1C1C1E] p-2.5 rounded-xl transition-all duration-200 active:scale-90"
+                    aria-label="Zavřít detail doplňku"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
+
                 <div class="flex items-center gap-5">
-                    <div id="m-icon" class="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner border border-white/50 dark:border-white/5 bg-slate-50 dark:bg-[#1C1C1E]">💊</div>
-                    <div class="flex-grow">
+                    <div id="m-icon" class="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner border border-white/50 dark:border-white/5 bg-slate-50 dark:bg-[#1C1C1E]">
+                        💊
+                    </div>
+                    <div class="flex-grow min-w-0">
                         <div class="flex flex-wrap items-center gap-2 mb-1.5">
-                            <span id="m-category" class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg leading-none bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">Kategorie</span>
+                            <span id="m-category" class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg leading-none bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
+                                Kategorie
+                            </span>
                             <div id="m-confidence" class="flex items-center"></div>
                         </div>
-                        <h2 id="m-title" class="text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">Název doplňku</h2>
+                        <h2 id="m-title" class="text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">
+                            Název doplňku
+                        </h2>
                     </div>
                 </div>
             </div>
@@ -375,13 +574,23 @@
             <div class="p-6 space-y-6">
                 <p id="m-desc" class="text-base text-slate-600 dark:text-slate-400 leading-relaxed font-medium"></p>
 
+                <div
+                    id="m-fit-note"
+                    class="hidden bg-brand-50/60 dark:bg-brand-500/10 border border-brand-100/70 dark:border-brand-500/20 rounded-2xl px-4 py-3 text-sm font-semibold text-brand-800 dark:text-brand-200"
+                ></div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-green-50/50 dark:bg-green-500/5 p-4 rounded-2xl border border-green-100/50 dark:border-green-500/10">
-                        <h3 class="text-[11px] font-black text-green-700 dark:text-green-400 uppercase tracking-widest mb-3 flex items-center gap-2"><span>✅</span> Benefity</h3>
+                        <h3 class="text-[11px] font-black text-green-700 dark:text-green-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span>✅</span> Benefity
+                        </h3>
                         <ul id="m-benefits" class="text-sm text-green-900 dark:text-green-200/80 space-y-2 font-medium"></ul>
                     </div>
+
                     <div class="bg-blue-50/50 dark:bg-blue-500/5 p-4 rounded-2xl border border-blue-100/50 dark:border-blue-500/10">
-                        <h3 class="text-[11px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2"><span>ℹ️</span> Užívání</h3>
+                        <h3 class="text-[11px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span>ℹ️</span> Užívání
+                        </h3>
                         <div class="space-y-3">
                             <div class="flex flex-col">
                                 <span class="text-[10px] uppercase text-blue-400 dark:text-blue-500/60 font-bold tracking-wider">Doporučená dávka</span>
@@ -397,11 +606,16 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="space-y-3">
-                        <h3 class="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] px-1">🤝 Synergie</h3>
+                        <h3 class="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] px-1">
+                            🤝 Synergie
+                        </h3>
                         <div id="m-synergy" class="flex flex-wrap gap-2 pl-1"></div>
                     </div>
+
                     <div class="space-y-3">
-                        <h3 class="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] px-1">⚠️ Konflikty</h3>
+                        <h3 class="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] px-1">
+                            ⚠️ Konflikty
+                        </h3>
                         <div id="m-conflict" class="flex flex-wrap gap-2 pl-1"></div>
                     </div>
                 </div>
@@ -410,10 +624,11 @@
                     <details class="group border border-slate-100 dark:border-white/5 rounded-2xl overflow-hidden bg-slate-50/30 dark:bg-white/5 transition-all duration-300">
                         <summary class="flex items-center justify-between p-4 cursor-pointer list-none hover:bg-slate-100/50 dark:hover:bg-white/[0.08] transition-colors">
                             <h3 class="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <span class="text-sm">📚</span> Vědecké studie a výzkum
+                                <span class="text-sm">📚</span>
+                                Vědecké studie a výzkum
                             </h3>
-                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
                         <div id="m-studies" class="p-4 pt-2 space-y-2 border-t border-slate-100 dark:border-white/5 bg-white/50 dark:bg-black/20"></div>
@@ -424,47 +639,127 @@
             <!-- Modal footer -->
             <div class="p-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1C1C1E]/50 sticky bottom-0 z-10 flex items-center justify-between rounded-b-[2.5rem] backdrop-blur-md">
                 <div class="hidden sm:block">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight" id="ui-modal-footer-note">Ověřeno vědeckými daty</p>
+                    <p id="ui-modal-footer-note" class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        Ověřeno vědeckými daty
+                    </p>
                 </div>
                 <div class="flex gap-2 w-full sm:w-auto">
-                    <button id="m-compare-btn"
-                        class="bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 px-4 py-3.5 rounded-2xl font-black transition text-xs uppercase tracking-widest hover:bg-brand-500 hover:text-white active:scale-95">
+                    <button
+                        id="m-compare-btn"
+                        type="button"
+                        class="bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 px-4 py-3.5 rounded-2xl font-black transition text-xs uppercase tracking-widest hover:bg-brand-500 hover:text-white active:scale-95"
+                    >
                         Porovnat
                     </button>
-                    <button id="m-toggle-btn"
-                        class="flex-1 sm:flex-none bg-slate-900 dark:bg-brand-600 text-white px-8 py-3.5 rounded-2xl font-black transition shadow-xl active:scale-95 text-xs uppercase tracking-widest hover:bg-brand-600 dark:hover:bg-brand-500">
+                    <button
+                        id="m-toggle-btn"
+                        type="button"
+                        class="flex-1 sm:flex-none bg-slate-900 dark:bg-brand-600 text-white px-8 py-3.5 rounded-2xl font-black transition shadow-xl active:scale-95 text-xs uppercase tracking-widest hover:bg-brand-600 dark:hover:bg-brand-500"
+                    >
                         Přidat do Stacku
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════ FOOTER -->
+    <!-- FOOTER -->
     <footer class="mt-auto border-t border-slate-200/50 dark:border-white/5 bg-white/60 dark:bg-[#0A0A0A]/40 backdrop-blur-2xl transition-all duration-500">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="text-[10px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
-                © 2026 <span class="text-slate-900 dark:text-white">Supplement</span><span class="text-brand-600">Guide</span> <span class="text-brand-400 font-extrabold">V3.5</span>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-[10px] font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase text-center sm:text-left">
+                © 2026 <span class="text-slate-900 dark:text-white">Supplement</span><span class="text-brand-600">Guide</span>
+                <span class="text-brand-400 font-extrabold">V4.2.3</span>
             </div>
+
             <div class="hidden md:flex items-center gap-2 px-4 py-1.5 bg-slate-100/50 dark:bg-white/5 rounded-full border border-slate-200/50 dark:border-white/5">
                 <span class="text-[10px] leading-none">⚠️</span>
-                <p class="text-[9px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-tight">Nenahrazuje lékařskou péči. Konzultujte s odborníkem.</p>
+                <p class="text-[9px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-tight">
+                    Nenahrazuje lékařskou péči. Konzultujte s odborníkem.
+                </p>
             </div>
-            <a href="https://beacons.ai/tommyy.fit" target="_blank"
-                class="group relative flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 hover:bg-brand-500/10 active:scale-95">
-                <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest transition-colors group-hover:text-brand-600">Created by</span>
-                <span class="text-[10px] font-extrabold text-slate-800 dark:text-white tracking-tighter transition-all group-hover:tracking-normal group-hover:text-brand-600">tommyyfit</span>
-                <svg class="w-2.5 h-2.5 text-slate-300 dark:text-slate-600 transition-colors group-hover:text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+
+            <a
+                href="https://beacons.ai/tommyy.fit"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group relative flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 hover:bg-brand-500/10 active:scale-95"
+                aria-label="Created by tommyyfit"
+            >
+                <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest transition-colors group-hover:text-brand-600">
+                    Created by
+                </span>
+                <span class="text-[10px] font-extrabold text-slate-800 dark:text-white tracking-tighter transition-all group-hover:tracking-normal group-hover:text-brand-600">
+                    tommyyfit
+                </span>
+                <svg class="w-2.5 h-2.5 text-slate-300 dark:text-slate-600 transition-colors group-hover:text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
             </a>
         </div>
     </footer>
 
-    <script src="translations.js"></script>
-    <script src="supplements.js"></script>
-    <script src="script.js"></script>
-    <script src="updates.js"></script>
+    <input type="file" id="json-import-input" accept="application/json" class="hidden" />
+
+    <!-- APP DIALOG -->
+    <div
+        id="app-dialog-backdrop"
+        class="fixed inset-0 bg-black/60 backdrop-blur-md z-[280] hidden opacity-0 transition-all duration-300 p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-title"
+    >
+        <div
+            id="app-dialog"
+            class="max-w-md w-full mx-auto mt-[10vh] bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-2xl transform translate-y-4 scale-[0.98] transition-all duration-300 overflow-hidden"
+        >
+            <div class="p-6 border-b border-slate-100 dark:border-white/5">
+                <div class="flex items-center gap-3">
+                    <div id="dialog-icon" class="w-11 h-11 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xl">
+                        ✨
+                    </div>
+                    <div>
+                        <p id="dialog-kicker" class="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
+                            Supplement Guide
+                        </p>
+                        <h3 id="dialog-title" class="text-lg font-black text-slate-900 dark:text-white">Confirm</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <p id="dialog-message" class="text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed"></p>
+                <div id="dialog-input-wrap" class="hidden">
+                    <input
+                        id="dialog-input"
+                        type="text"
+                        class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1C1C1E] text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                    />
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/70 dark:bg-white/5 flex gap-3">
+                <button
+                    id="dialog-cancel"
+                    type="button"
+                    class="flex-1 px-4 py-3 rounded-2xl bg-slate-100 dark:bg-[#1C1C1E] text-slate-700 dark:text-slate-200 font-black text-xs uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-[#2C2C2E] transition-all"
+                >
+                    Cancel
+                </button>
+                <button
+                    id="dialog-confirm"
+                    type="button"
+                    class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 dark:bg-brand-600 text-white font-black text-xs uppercase tracking-widest hover:bg-brand-600 dark:hover:bg-brand-500 transition-all"
+                >
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+<script src="translations.js"></script>
+<script src="supplements.js"></script>
+<script src="script.js"></script>
+<script src="updates.js"></script>
 </body>
 </html>

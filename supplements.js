@@ -1,5 +1,5 @@
 // =================================================================
-// --- SUPPLEMENTS DATABASE (56 ITEMS - V3 - BILINGUAL - RESEARCHED) ---
+// --- SUPPLEMENTS DATABASE (57 ITEMS - V4.2.3 - BILINGUAL - RESEARCHED) ---
 // =================================================================
 
 const supplements = [
@@ -907,5 +907,25 @@ const supplements = [
         benefits: { cs: ["Svalová hmota", "Regenerace", "Síla"], en: ["Muscle mass", "Recovery", "Strength"] },
         dosage: "500mg",
         timing: { cs: "S jídlem", en: "With food" }
+    },
+
+    // --- V4.2.3 NEW SUPPLEMENTS ---
+    {
+        id: 57,
+        category: "Zdraví",
+        confidence: "low",
+        link: "https://examine.com/supplements/tribulus-terrestris/",
+        icon: "🌿",
+        contains: ["Tribulus Terrestris", "Protodioscin"],
+        studies: ["https://pubmed.ncbi.nlm.nih.gov/24559105/", "https://pubmed.ncbi.nlm.nih.gov/29172782/"],
+        synergy: ["Maca", "Zinek", "Tongkat Ali"],
+        conflict: ["Léky na cukrovku", "Léky na tlak"],
+        name: { cs: "Tribulus Terrestris", en: "Tribulus Terrestris" },
+        description: { cs: "Tradiční bylina pro libido. U zdravých mužů nemá spolehlivý vliv na testosteron.", en: "Traditional libido herb. It has not reliably increased testosterone in healthy men." },
+        benefits: { cs: ["Libido", "Sexuální vitalita", "Možná podpora nálady"], en: ["Libido", "Sexual vitality", "Possible mood support"] },
+        dosage: "500-1500mg",
+        timing: { cs: "Ráno / s jídlem", en: "Morning / with food" }
     }
 ];
+
+window.supplements = supplements;
